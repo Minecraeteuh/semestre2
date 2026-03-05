@@ -1,0 +1,33 @@
+{
+  "kind": "collectionType",
+  "collectionName": "cards",
+  "info": {
+    "singularName": "card",
+    "pluralName": "cards",
+    "displayName": "card"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "content": {
+      "type": "string"
+    },
+    "description": {
+      "type": "text"
+    },
+    "order": {
+      "type": "integer"
+    },
+    "deadline": {
+      "type": "datetime"
+    },
+    "board": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::board.board",
+      "inversedBy": "cards"
+    }
+  }
+}
