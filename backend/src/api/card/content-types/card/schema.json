@@ -11,7 +11,7 @@
   },
   "pluginOptions": {},
   "attributes": {
-    "content": {
+    "title": {
       "type": "string"
     },
     "description": {
@@ -27,6 +27,12 @@
       "type": "relation",
       "relation": "manyToOne",
       "target": "api::board.board",
+      "inversedBy": "cards"
+    },
+    "list": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::list.list",
       "inversedBy": "cards"
     }
   }

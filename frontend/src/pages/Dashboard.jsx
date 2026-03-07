@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import api from "../services/api"; // Ton instance avec le token
+import { Link } from "react-router-dom";
+import api from "../services/api";
 
 export default function Dashboard() {
   const [boards, setBoards] = useState([]);
@@ -11,56 +12,76 @@ export default function Dashboard() {
   const fetchBoards = async () => {
     try {
       const res = await api.get("/boards");
-      // Strapi V5 renvoie souvent les données dans res.data.data
       setBoards(res.data.data || []);
     } catch (err) {
-      console.error("Erreur lors du chargement des tableaux :", err);
+      console.error("Erreur lors de la récupération des tableaux:", err);
     }
   };
 
   const handleCreateBoard = async () => {
-    const title = prompt("Nom du nouveau tableau :");
+    const title = prompt("Entrez le titre du nouveau tableau :");
     if (!title) return;
 
     try {
-      // On envoie le titre à Strapi
-      await api.post("/boards", { data: { title } });
-      fetchBoards(); // On rafraîchit la liste
+      // Structure Strapi 5 : les données doivent être dans un objet 'data'
+      await api.post("/boards", {
+        data: {
+          title: title,
+          publishedAt: new Date().toISOString(), // Pour qu'il soit visible immédiatement
+        },
+      });
+      fetchBoards(); // Rafraîchir la liste après la création
     } catch (err) {
-      alert("Erreur : Vérifie les permissions 'create' dans Strapi");
+      alert("Erreur lors de la création du tableau. Vérifiez vos permissions Strapi.");
+      console.error(err);
     }
   };
 
   return (
-    <div style={{ padding: "30px", color: "white" }}>
-      <h1>Mes Projets SupTaskFlow</h1>
+    <div style={{ padding: "30px", color: "white", backgroundColor: "#121212", minHeight: "100vh" }}>
+      <h1 style={{ marginBottom: "30px" }}>Mes Projets SupTaskFlow</h1>
       
-      <div style={{ display: "flex", gap: "20px", marginTop: "20px", flexWrap: "wrap" }}>
+      <div style={{ display: "flex", gap: "20px", flexWrap: "wrap" }}>
         {/* Affichage des tableaux existants */}
         {boards.map((board) => (
-          <div key={board.id} style={{ 
-            padding: "20px", 
-            border: "1px solid #444", 
-            borderRadius: "8px",
-            minWidth: "150px",
-            backgroundColor: "#222"
-          }}>
-            {board.attributes?.title || board.title}
-          </div>
+          <Link 
+            key={board.id} 
+            // C'EST ICI LA CORRECTION POUR STRAPI 5 👇
+            to={`/board/${board.documentId || board.id}`} 
+            style={{ textDecoration: "none", color: "inherit" }}
+          >
+            <div style={{ 
+              padding: "20px", 
+              border: "1px solid #444", 
+              borderRadius: "8px", 
+              backgroundColor: "#222", 
+              minWidth: "150px",
+              textAlign: "center"
+            }}>
+              {board.attributes?.title || board.title}
+            </div>
+          </Link>
         ))}
 
-        {/* LE BOUTON QUI MANQUE */}
+        {/* LE BOUTON POUR AJOUTER */}
         <button 
           onClick={handleCreateBoard}
-          style={{
-            padding: "20px",
-            border: "2px dashed #666",
-            borderRadius: "8px",
-            backgroundColor: "transparent",
-            color: "#aaa",
+          style={{ 
+            padding: "20px", 
+            border: "2px dashed #444", 
+            borderRadius: "8px", 
+            backgroundColor: "transparent", 
+            color: "#888", 
+            minWidth: "190px",
             cursor: "pointer",
-            minWidth: "150px"
+            fontSize: "16px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            transition: "0.3s"
           }}
+          onMouseOver={(e) => (e.target.style.borderColor = "#3b82f6", e.target.style.color = "#3b82f6")}
+          onMouseOut={(e) => (e.target.style.borderColor = "#444", e.target.style.color = "#888")}
         >
           + Nouveau Tableau
         </button>

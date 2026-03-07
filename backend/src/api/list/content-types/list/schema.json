@@ -16,6 +16,17 @@
     },
     "order": {
       "type": "integer"
+    },
+    "board": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::board.board"
+    },
+    "cards": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::card.card",
+      "mappedBy": "list"
     }
   }
 }

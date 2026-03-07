@@ -6,6 +6,7 @@ import "react-toastify/dist/ReactToastify.css";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
+import Board from "./pages/Board"; // 👈 1. Ajoute cet import
 
 function App() {
   return (
@@ -17,6 +18,9 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        
+        {/* 👈 2. Ajoute la route dynamique pour le détail du tableau */}
+        <Route path="/board/:id" element={<Board />} />
         
         {/* Par défaut, on va sur le login */}
         <Route path="*" element={<Navigate to="/login" />} />

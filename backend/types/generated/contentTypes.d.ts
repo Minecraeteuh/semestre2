@@ -483,6 +483,7 @@ export interface ApiBoardBoard extends Struct.CollectionTypeSchema {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    lists: Schema.Attribute.Relation<'oneToMany', 'api::list.list'>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::board.board'> &
       Schema.Attribute.Private;
@@ -506,17 +507,18 @@ export interface ApiCardCard extends Struct.CollectionTypeSchema {
   };
   attributes: {
     board: Schema.Attribute.Relation<'manyToOne', 'api::board.board'>;
-    content: Schema.Attribute.String;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     deadline: Schema.Attribute.DateTime;
     description: Schema.Attribute.Text;
+    list: Schema.Attribute.Relation<'manyToOne', 'api::list.list'>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::card.card'> &
       Schema.Attribute.Private;
     order: Schema.Attribute.Integer;
     publishedAt: Schema.Attribute.DateTime;
+    title: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -534,6 +536,8 @@ export interface ApiListList extends Struct.CollectionTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
+    board: Schema.Attribute.Relation<'oneToOne', 'api::board.board'>;
+    cards: Schema.Attribute.Relation<'oneToMany', 'api::card.card'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;

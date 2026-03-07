@@ -22,6 +22,11 @@
       "relation": "oneToMany",
       "target": "api::card.card",
       "mappedBy": "board"
+    },
+    "lists": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::list.list"
     }
   }
 }
