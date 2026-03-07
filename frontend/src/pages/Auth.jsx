@@ -18,7 +18,6 @@ export default function Auth() {
 
     try {
       if (isLogin) {
-        // Tentative de connexion (identifier = email ou username dans Strapi)
         const res = await api.post("/auth/local", {
           identifier: formData.email,
           password: formData.password,
@@ -27,7 +26,6 @@ export default function Auth() {
         localStorage.setItem("user", JSON.stringify(res.data.user));
         navigate("/dashboard");
       } else {
-        // Tentative d'inscription
         const res = await api.post("/auth/local/register", {
           username: formData.username,
           email: formData.email,

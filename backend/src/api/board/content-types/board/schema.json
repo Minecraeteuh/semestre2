@@ -27,6 +27,12 @@
       "type": "relation",
       "relation": "oneToMany",
       "target": "api::list.list"
+    },
+    "author": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "boards"
     }
   }
 }

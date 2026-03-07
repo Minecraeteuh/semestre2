@@ -5,10 +5,13 @@ const api = axios.create({
 });
 
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
-  if (token) {
+  const token = localStorage.getItem("jwt");
+  
+  // CORRECTION : On n'attache le token QUE si on n'est pas sur une route d'authentification
+  if (token && !config.url.includes("/auth")) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+  
   return config;
 });
 
