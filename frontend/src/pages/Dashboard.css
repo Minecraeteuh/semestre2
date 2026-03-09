@@ -1,0 +1,93 @@
+.dash-page {
+    padding: 40px;
+    background-color: #050505;
+    min-height: 100vh;
+    color: #eee;
+    font-family: monospace;
+}
+.dash-loader {
+    padding: 100px;
+    color: #00ff88;
+    text-align: center;
+}
+.dash-nav {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 60px;
+    border-bottom: 1px solid #111;
+    padding-bottom: 20px;
+}
+.dash-logo {
+    font-size: 20px;
+    color: #00ff88;
+    letter-spacing: 2px;
+}
+.dash-user-zone {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+.dash-username {
+    color: #666;
+}
+.dash-logout-btn {
+    background: none;
+    border: none;
+    color: #ff4444;
+    cursor: pointer;
+    font-weight: bold;
+}
+.dash-content {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+.dash-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 40px;
+    align-items: center;
+}
+.dash-subtitle {
+    color: #444;
+}
+.dash-create-btn {
+    background-color: #00ff88;
+    color: #000;
+    border: none;
+    padding: 12px 25px;
+    font-weight: bold;
+    cursor: pointer;
+}
+.dash-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 25px;
+}
+.dash-empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 50px;
+    border: 1px dashed #222;
+    color: #555;
+}
+.dash-card {
+    background-color: #0a0a0a;
+    border: 1px solid #111;
+    padding: 25px;
+    cursor: pointer;
+    position: relative;
+}
+.dash-card-title {
+    color: #fff;
+    margin: 0 0 15px 0;
+}
+.dash-del-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    color: #444;
+    cursor: pointer;
+    font-size: 20px;
+}

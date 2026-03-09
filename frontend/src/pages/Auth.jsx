@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
+import "Auth.css";
 
 export default function Auth() {
   const [isLogin, setIsLogin] = useState(true);
@@ -20,9 +21,9 @@ export default function Auth() {
 
     try {
       if (isLogin) {
-        // 🔐 CONNEXION : Strapi attend "identifier" et "password"
+        // Connexion
         const res = await api.post("/auth/local", {
-          identifier: email, // Strapi utilise 'identifier' pour l'email ou le username
+          identifier: email,
           password: password,
         });
         
@@ -30,7 +31,7 @@ export default function Auth() {
         localStorage.setItem("user", JSON.stringify(res.data.user));
         navigate("/dashboard");
       } else {
-        // 📝 INSCRIPTION
+        // Register
         const res = await api.post("/auth/local/register", {
           username: username,
           email: email,
@@ -50,55 +51,38 @@ export default function Auth() {
   };
 
   return (
-    <div style={s.page}>
-      <div style={s.container}>
-        <h1 style={s.logo}>SupTaskFlow</h1>
-        <p style={s.status}>&gt;_AUTH_REQUIRED</p>
+      <div className="auth-page">
+        <div className="auth-container">
+          <h1 className="auth-logo">SupTaskFlow</h1>
+          <p className="auth-status">&gt;_AUTH_REQUIRED</p>
+          <form onSubmit={handleSubmit} className="auth-form">
+            {error && <div className="auth-error-badge">ERREUR_SYSTEM: {error}</div>}
+            {!isLogin && (
+                <input name="username" placeholder="USERNAME" className="auth-input" required />
+            )}
+            <input
+                name="email"
+                type="text"
+                placeholder="EMAIL_OR_USER"
+                className="auth-input"
+                required
+            />
+            <input
+                name="password"
+                type="password"
+                placeholder="PASSWORD"
+                className="auth-input"
+                required
+            />
+            <button type="submit" className="auth-btn" disabled={loading}>
+              {loading ? "_PROCESSING..." : `[ ${isLogin ? "LOGIN" : "REGISTER"} ]`}
+            </button>
+          </form>
 
-        <form onSubmit={handleSubmit} style={s.form}>
-          {error && <div style={s.errorBadge}>ERREUR_SYSTEM: {error}</div>}
-          
-          {!isLogin && (
-            <input name="username" placeholder="USERNAME" style={s.input} required />
-          )}
-          
-          <input 
-            name="email" 
-            type="text" 
-            placeholder="EMAIL_OR_USER" 
-            style={s.input} 
-            required 
-          />
-          
-          <input 
-            name="password" 
-            type="password" 
-            placeholder="PASSWORD" 
-            style={s.input} 
-            required 
-          />
-
-          <button type="submit" style={s.btn} disabled={loading}>
-            {loading ? "_PROCESSING..." : `[ ${isLogin ? "LOGIN" : "REGISTER"} ]`}
+          <button onClick={() => setIsLogin(!isLogin)} className="auth-switch">
+            // {isLogin ? "No account? register_here" : "Have account? login_here"}
           </button>
-        </form>
-
-        <button onClick={() => setIsLogin(!isLogin)} style={s.switch}>
-          // {isLogin ? "No account? register_here" : "Have account? login_here"}
-        </button>
+        </div>
       </div>
-    </div>
   );
 }
-
-const s = {
-  page: { height: "100vh", backgroundColor: "#050505", display: "flex", justifyContent: "center", alignItems: "center", fontFamily: "monospace" },
-  container: { width: "350px", padding: "40px", borderLeft: "2px solid #111" },
-  logo: { color: "#00ff88", fontSize: "28px", marginBottom: "5px", textAlign: "center" },
-  status: { color: "#333", fontSize: "10px", textAlign: "center", marginBottom: "40px" },
-  form: { display: "flex", flexDirection: "column", gap: "15px" },
-  input: { backgroundColor: "#000", border: "1px solid #111", padding: "12px", color: "#00ff88", outline: "none" },
-  btn: { backgroundColor: "#00ff88", color: "#000", border: "none", padding: "12px", fontWeight: "bold", cursor: "pointer", marginTop: "10px" },
-  errorBadge: { border: "1px solid #ff4444", color: "#ff4444", padding: "10px", fontSize: "11px", marginBottom: "10px" },
-  switch: { background: "none", border: "none", color: "#222", fontSize: "10px", marginTop: "20px", cursor: "pointer", width: "100%" }
-};
