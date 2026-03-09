@@ -28,11 +28,8 @@
       "relation": "oneToMany",
       "target": "api::list.list"
     },
-    "users_permissions_user": {
-      "type": "relation",
-      "relation": "manyToOne",
-      "target": "plugin::users-permissions.user",
-      "inversedBy": "boards"
+    "authorId": {
+      "type": "string"
     }
   }
 }

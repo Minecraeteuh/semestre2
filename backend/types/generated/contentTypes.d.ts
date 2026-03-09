@@ -478,6 +478,7 @@ export interface ApiBoardBoard extends Struct.CollectionTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
+    authorId: Schema.Attribute.String;
     cards: Schema.Attribute.Relation<'oneToMany', 'api::card.card'>;
     color: Schema.Attribute.String;
     createdAt: Schema.Attribute.DateTime;
@@ -492,10 +493,6 @@ export interface ApiBoardBoard extends Struct.CollectionTypeSchema {
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    users_permissions_user: Schema.Attribute.Relation<
-      'manyToOne',
-      'plugin::users-permissions.user'
-    >;
   };
 }
 
@@ -1017,7 +1014,6 @@ export interface PluginUsersPermissionsUser
   };
   attributes: {
     blocked: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
-    boards: Schema.Attribute.Relation<'oneToMany', 'api::board.board'>;
     confirmationToken: Schema.Attribute.String & Schema.Attribute.Private;
     confirmed: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     createdAt: Schema.Attribute.DateTime;
