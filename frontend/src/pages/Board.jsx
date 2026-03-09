@@ -96,7 +96,7 @@ export default function Board() {
     } catch (err) { console.error("Erreur DND:", err); }
   };
 
-  if (!board) return <div className="board-loader">_INITIALISATION_SYSTÈME_...</div>;
+  if (!board) return <div className="board-loader">Chargement du tableau...</div>;
 
   return (
       <div className="board-page">
@@ -105,7 +105,7 @@ export default function Board() {
             <button onClick={() => navigate("/dashboard")} className="board-back-btn">←</button>
             <h1 className="board-title">{board.title || board.attributes?.title}</h1>
           </div>
-          <div className="board-status">FLUX_SYNCHRONISÉ</div>
+          <div className="board-status">Tableau à jour</div>
         </header>
 
         <main className="board-container">
@@ -127,7 +127,7 @@ export default function Board() {
                       );
                     })}
                   </div>
-                  <button onClick={() => onAddCard(listId)} className="board-add-btn">+ NEW_TASK</button>
+                  <button onClick={() => onAddCard(listId)} className="board-add-btn">+ Nouvelle tâche</button>
                 </section>
             );
           })}
@@ -137,7 +137,7 @@ export default function Board() {
         {editingCard && (
             <div className="modal-overlay">
               <div className="modal-content">
-                <h2 className="modal-title">&gt;_ÉDITION_TÂCHE</h2>
+                <h2 className="modal-title">Modifier la tâche</h2>
                 <form onSubmit={onUpdateCard} className="modal-form">
                   <input name="title" defaultValue={editingCard.title || editingCard.attributes?.title} className="modal-input" required />
                   <textarea name="description" defaultValue={editingCard.description || editingCard.attributes?.description} className="modal-area" placeholder="DESCRIPTION" rows="4" />

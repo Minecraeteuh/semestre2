@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
-import "Auth.css";
+import "./Auth.css";
 
 export default function Auth() {
   const [isLogin, setIsLogin] = useState(true);
@@ -43,7 +43,7 @@ export default function Auth() {
         navigate("/dashboard");
       }
     } catch (err) {
-      console.error("DÉTAILS ERREUR AUTH:", err.response?.data);
+      console.error("details erreur authentification:", err.response?.data);
       setError(err.response?.data?.error?.message || "Identifiants invalides.");
     } finally {
       setLoading(false);
@@ -54,28 +54,28 @@ export default function Auth() {
       <div className="auth-page">
         <div className="auth-container">
           <h1 className="auth-logo">SupTaskFlow</h1>
-          <p className="auth-status">&gt;_AUTH_REQUIRED</p>
+          <p className="auth-status">&gt;Veuillez vous connecter</p>
           <form onSubmit={handleSubmit} className="auth-form">
-            {error && <div className="auth-error-badge">ERREUR_SYSTEM: {error}</div>}
+            {error && <div className="auth-error-badge">Erreur : {error}</div>}
             {!isLogin && (
                 <input name="username" placeholder="USERNAME" className="auth-input" required />
             )}
             <input
                 name="email"
                 type="text"
-                placeholder="EMAIL_OR_USER"
+                placeholder="Email ou nom d'utilisateur"
                 className="auth-input"
                 required
             />
             <input
                 name="password"
                 type="password"
-                placeholder="PASSWORD"
+                placeholder="Mot de passe"
                 className="auth-input"
                 required
             />
             <button type="submit" className="auth-btn" disabled={loading}>
-              {loading ? "_PROCESSING..." : `[ ${isLogin ? "LOGIN" : "REGISTER"} ]`}
+              {loading ? "Chargement... : `[ ${isLogin ? "LOGIN" : "REGISTER"} ]`}
             </button>
           </form>
 

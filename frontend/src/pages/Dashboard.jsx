@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
-import "Dashboard.css";
+import "./Dashboard.css";
 
 export default function Dashboard() {
   const [boards, setBoards] = useState([]);
@@ -57,7 +57,7 @@ export default function Dashboard() {
       fetchBoards(user.id); 
     } catch (e) {
       console.error("ERREUR:", e.response?.data);
-      alert("Une erreur est survenue lors de la création du projet.");
+      alert("Une erreur est survenue lors de la récupération de vos projets.");
     }
   };
 
@@ -76,21 +76,21 @@ export default function Dashboard() {
     navigate("/", { replace: true });
   };
 
-  if (loading) return <div className="dash-loader">_CHARGEMENT_...</div>;
+  if (loading) return <div className="dash-loader">Chargement...</div>;
 
   return (
       <div className="dash-page">
         <nav className="dash-nav">
-          <h1 className="dash-logo">SUP_TASK_FLOW</h1>
+          <h1 className="dash-logo">Tableau Kanban</h1>
           <div className="dash-user-zone">
             <span className="dash-username">{user?.username}</span>
-            <button onClick={handleLogout} className="dash-logout-btn">[ DÉCONNEXION ]</button>
+            <button onClick={handleLogout} className="dash-logout-btn">Déconnexion</button>
           </div>
         </nav>
         <div className="dash-content">
           <div className="dash-header">
-            <h2 className="dash-subtitle">MES_PROJETS_ACTIFS</h2>
-            <button onClick={onCreateBoard} className="dash-create-btn">+ NEW_PROJECT</button>
+            <h2 className="dash-subtitle">Mes projets</h2>
+            <button onClick={onCreateBoard} className="dash-create-btn">+ Nouveau projet</button>
           </div>
           <div className="dash-grid">
             {boards.length === 0 ? (
