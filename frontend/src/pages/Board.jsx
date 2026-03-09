@@ -140,7 +140,7 @@ export default function Board() {
                 <h2 className="modal-title">Modifier la tâche</h2>
                 <form onSubmit={onUpdateCard} className="modal-form">
                   <input name="title" defaultValue={editingCard.title || editingCard.attributes?.title} className="modal-input" required />
-                  <textarea name="description" defaultValue={editingCard.description || editingCard.attributes?.description} className="modal-area" placeholder="DESCRIPTION" rows="4" />
+                  <textarea name="description" defaultValue={editingCard.description || editingCard.attributes?.description} className="modal-area" placeholder="description" rows="4" />
                   <div className="modal-group">
                     <div className="modal-flex-1">
                       <label className="modal-mini-label">DATE D'ÉCHÉANCE</label>
@@ -148,13 +148,13 @@ export default function Board() {
                     </div>
                     <div className="modal-flex-1">
                       <label className="modal-mini-label">LABEL</label>
-                      <input name="label" defaultValue={editingCard.label || editingCard.attributes?.label} className="modal-input" placeholder="LABEL" />
+                      <input name="label" defaultValue={editingCard.label || editingCard.attributes?.label} className="modal-input" placeholder="label" />
                     </div>
                   </div>
                   <input type="hidden" name="order" defaultValue={editingCard.order || editingCard.attributes?.order || 0} />
                   <div className="modal-actions">
                     <button type="button" onClick={onDeleteCard} className="modal-del-btn">[ SUPPRIMER ]</button>
-                    <button type="submit" className="modal-save-btn" disabled={isUpdating}>{isUpdating ? "_ENVOI..." : "[ ENREGISTRER ]"}</button>
+                    <button type="submit" className="modal-save-btn" disabled={isUpdating}>{isUpdating ? "_envoi..." : "enregistrer"}</button>
                     <button type="button" onClick={() => setEditingCard(null)} className="modal-close-btn">[ X ]</button>
                   </div>
                 </form>

@@ -94,7 +94,7 @@ export default function Dashboard() {
           </div>
           <div className="dash-grid">
             {boards.length === 0 ? (
-                <div className="dash-empty">AUCUN PROJET TROUVÉ. CLIQUEZ SUR + NEW_PROJECT.</div>
+                <div className="dash-empty">Aucun projet trouvé. Cliquer sur "+ Nouveau projet".</div>
             ) : (
                 boards.map((b) => (
                     <div key={b.id} onClick={() => navigate(`/board/${b.documentId || b.id}`)} className="dash-card">

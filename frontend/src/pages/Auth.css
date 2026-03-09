@@ -1,62 +1,101 @@
 .auth-page {
     height: 100vh;
-    background-color: #050505;
+    background-color: #000;
     display: flex;
     justify-content: center;
     align-items: center;
-    font-family: monospace;
+    color: #fff;
+    font-family: "Inter", system-ui, -apple-system, sans-serif;
 }
+
 .auth-container {
-    width: 350px;
+    width: 100%;
+    max-width: 400px;
     padding: 40px;
-    border-left: 2px solid #111;
+    background-color: #050505;
+    border: 1px solid #222;
+    border-radius: 12px;
 }
+
 .auth-logo {
-    color: #00ff88;
-    font-size: 28px;
-    margin-bottom: 5px;
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 8px;
     text-align: center;
+    letter-spacing: -0.02em;
 }
+
 .auth-status {
-    color: #333;
-    font-size: 10px;
+    color: #666;
+    font-size: 14px;
     text-align: center;
-    margin-bottom: 40px;
+    margin-bottom: 32px;
 }
+
 .auth-form {
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 16px;
 }
+
 .auth-input {
     background-color: #000;
-    border: 1px solid #111;
-    padding: 12px;
-    color: #00ff88;
+    border: 1px solid #222;
+    border-radius: 6px;
+    padding: 10px 12px;
+    color: #fff;
+    font-size: 14px;
+    transition: border-color 0.2s;
     outline: none;
 }
+
+.auth-input:focus {
+    border-color: #444;
+}
+
 .auth-btn {
-    background-color: #00ff88;
+    background-color: #fff;
     color: #000;
     border: none;
-    padding: 12px;
-    font-weight: bold;
+    border-radius: 6px;
+    padding: 10px;
+    font-size: 14px;
+    font-weight: 600;
     cursor: pointer;
-    margin-top: 10px;
+    margin-top: 8px;
+    transition: opacity 0.2s;
 }
+
+.auth-btn:hover {
+    opacity: 0.9;
+}
+
+.auth-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
 .auth-error-badge {
+    background-color: rgba(255, 68, 68, 0.1);
     border: 1px solid #ff4444;
     color: #ff4444;
-    padding: 10px;
-    font-size: 11px;
-    margin-bottom: 10px;
+    padding: 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    margin-bottom: 16px;
 }
+
 .auth-switch {
     background: none;
     border: none;
-    color: #222;
-    font-size: 10px;
-    margin-top: 20px;
+    color: #666;
+    font-size: 13px;
+    margin-top: 24px;
     cursor: pointer;
     width: 100%;
+    text-align: center;
+}
+
+.auth-switch:hover {
+    color: #fff;
 }

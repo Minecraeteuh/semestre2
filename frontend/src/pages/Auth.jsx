@@ -58,7 +58,7 @@ export default function Auth() {
           <form onSubmit={handleSubmit} className="auth-form">
             {error && <div className="auth-error-badge">Erreur : {error}</div>}
             {!isLogin && (
-                <input name="username" placeholder="USERNAME" className="auth-input" required />
+                <input name="username" placeholder="Nom d'utilisateur" className="auth-input" required />
             )}
             <input
                 name="email"
@@ -75,12 +75,12 @@ export default function Auth() {
                 required
             />
             <button type="submit" className="auth-btn" disabled={loading}>
-              {loading ? "Chargement... : `[ ${isLogin ? "LOGIN" : "REGISTER"} ]`}
+              {loading ? "Chargement... ": `[ ${isLogin ? "LOGIN" : "REGISTER"} ]`}
             </button>
           </form>
 
           <button onClick={() => setIsLogin(!isLogin)} className="auth-switch">
-            // {isLogin ? "No account? register_here" : "Have account? login_here"}
+            // {isLogin ? "Pas encore de compte ? Crééez-en un ici" : "Vous avez déjà un compte ? Connectez-vous ici"}
           </button>
         </div>
       </div>
