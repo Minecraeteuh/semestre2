@@ -2,116 +2,115 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
 
-// 1. On récupère l'utilisateur ICI (une seule fois au chargement de la page)
-const userString = localStorage.getItem("user");
-const user = userString ? JSON.parse(userString) : null;
-
-// 2. Vérifie bien que c'est "author" TOUT EN MINUSCULE dans Strapi
-const NOM_DU_CHAMP_STRAPI = "author"; 
-
 export default function Dashboard() {
   const [boards, setBoards] = useState([]);
+  const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  // Fonction pour charger les projets
-  const fetchBoards = async () => {
-    if (!user) return;
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    // 🔐 SÉCURITÉ : On vérifie si l'utilisateur est là
+    if (storedUser) {
+      const u = JSON.parse(storedUser);
+      setUser(u);
+      fetchBoards(u.id);
+    } else {
+      // 🎯 CHANGEMENT : On redirige vers "/" (Ta page Auth)
+      navigate("/", { replace: true });
+    }
+  }, [navigate]);
+
+  const fetchBoards = async (userId) => {
     try {
-      // On demande les projets avec le filtre
-      const res = await api.get(`/boards?filters[${NOM_DU_CHAMP_STRAPI}][id][$eq]=${user.id}`);
+      setLoading(true);
+      const res = await api.get(`/boards?populate=*`);
       setBoards(res.data.data || []);
     } catch (e) {
-      console.warn("Filtre échoué, chargement sans filtre...");
-      const res = await api.get("/boards");
-      setBoards(res.data.data || []);
+      console.error("Erreur fetch", e);
     } finally {
       setLoading(false);
     }
   };
 
-  // Ce useEffect ne s'exécute QU'UNE SEULE FOIS au démarrage
-  useEffect(() => {
-    if (!user) {
-      navigate("/");
-    } else {
-      fetchBoards();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); 
-
-  const createBoard = async () => {
-    const title = prompt("Nom du nouveau projet ?");
+  const onCreateBoard = async () => {
+    const title = prompt("Nom du projet ?");
     if (!title) return;
-    
+
     try {
-      await api.post("/boards", {
-        data: { 
-          title, 
-          publishedAt: new Date().toISOString(),
-          [NOM_DU_CHAMP_STRAPI]: user.id 
-        }
-      });
-      fetchBoards();
+      await api.post("/boards", { data: { title, publishedAt: new Date() } });
+      fetchBoards(user.id);
     } catch (e) {
-      console.error("ERREUR_CREATION:", e.response?.data?.error);
-      alert("Erreur de création. Vérifie la console (F12)");
+      console.error("Erreur création", e);
     }
   };
 
-  const deleteBoard = async (e, id) => {
+  const onDeleteBoard = async (id, e) => {
     e.stopPropagation();
-    if (!confirm("Supprimer ?")) return;
+    if (!confirm("Supprimer ce projet ?")) return;
     try {
-      await api.delete(`/boards/${id}`);
-      fetchBoards();
+      const docId = id.documentId || id;
+      await api.delete(`/boards/${docId}`);
+      fetchBoards(user.id);
     } catch (e) { console.error(e); }
   };
 
+  // 🚪 LA FONCTION LOGOUT MISE À JOUR
   const handleLogout = () => {
-    localStorage.clear();
-    window.location.href = "/"; // Force le rechargement propre
+    localStorage.clear(); 
+    // 🎯 CHANGEMENT : Direction "/" pour correspondre à ton App.jsx
+    navigate("/", { replace: true }); 
   };
 
-  if (loading) return <div style={{textAlign: 'center', color: '#00ff88', marginTop: '100px'}}>_system_reboot...</div>;
+  if (loading) return <div style={s.loader}>_SYNC_...</div>;
 
   return (
     <div style={s.page}>
-      <header style={s.header}>
-        <h1 style={s.logo}>SupTaskFlow <span style={s.version}>v1.1.7</span></h1>
-        <div style={s.headerActions}>
-          <button onClick={createBoard} style={s.createBtn}>[+] NEW_PROJECT</button>
-          <button onClick={handleLogout} style={s.logoutBtn}>[ LOGOUT ]</button>
+      <nav style={s.nav}>
+        <h1 style={s.logo}>SUP_TASK_FLOW</h1>
+        <div style={s.userZone}>
+          <span style={s.username}>{user?.username}</span>
+          <button onClick={handleLogout} style={s.logoutBtn}>[ DÉCONNEXION ]</button>
         </div>
-      </header>
+      </nav>
 
-      <div style={s.grid}>
-        {boards.map((b) => (
-          <div key={b.id} style={s.card} onClick={() => navigate(`/board/${b.documentId || b.id}`)}>
-             <div style={s.cardHeader}>
-                <h2 style={s.cardTitle}>{b.title}</h2>
-                <button onClick={(e) => deleteBoard(e, b.documentId || b.id)} style={s.delBtn}>DEL</button>
-             </div>
-          </div>
-        ))}
-        {boards.length === 0 && <div style={s.empty}>// No projects found for {user?.username}.</div>}
+      <div style={s.content}>
+        <div style={s.header}>
+          <h2 style={s.subtitle}>MES_PROJETS_ACTIFS</h2>
+          <button onClick={onCreateBoard} style={s.createBtn}>+ NEW_PROJECT</button>
+        </div>
+
+        <div style={s.grid}>
+          {boards.length === 0 ? (
+            <div style={s.empty}>AUCUN PROJET TROUVÉ.</div>
+          ) : (
+            boards.map((b) => (
+              <div key={b.id} onClick={() => navigate(`/board/${b.documentId || b.id}`)} style={s.card}>
+                <h3 style={s.cardTitle}>{b.title || b.attributes?.title}</h3>
+                <button onClick={(e) => onDeleteBoard(b, e)} style={s.delBtn}>×</button>
+              </div>
+            ))
+          )}
+        </div>
       </div>
     </div>
   );
 }
 
 const s = {
-  page: { padding: "50px", backgroundColor: "#050505", minHeight: "100vh", color: "#eee", fontFamily: "monospace" },
-  header: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "60px", borderBottom: "1px solid #111", paddingBottom: "20px" },
-  headerActions: { display: "flex", gap: "15px" },
-  logo: { fontSize: "20px", fontWeight: "bold" },
-  version: { fontSize: "10px", color: "#444", marginLeft: "10px" },
-  createBtn: { backgroundColor: "#00ff88", color: "#000", border: "none", padding: "10px 20px", fontWeight: "bold", cursor: "pointer" },
-  logoutBtn: { backgroundColor: "transparent", color: "#ff4444", border: "1px solid #ff4444", padding: "10px 20px", cursor: "pointer" },
-  grid: { display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "25px" },
-  card: { backgroundColor: "#0a0a0a", border: "1px solid #111", padding: "20px", cursor: "pointer" },
-  cardHeader: { display: "flex", justifyContent: "space-between", alignItems: "center" },
-  cardTitle: { fontSize: "16px", margin: 0, color: "#fff", textTransform: "uppercase" },
-  delBtn: { background: "none", border: "1px solid #222", color: "#444", fontSize: "10px", cursor: "pointer" },
-  empty: { gridColumn: "1/-1", padding: "40px", color: "#222", border: "1px dashed #111", textAlign: "center" }
+  page: { padding: "40px", backgroundColor: "#050505", minHeight: "100vh", color: "#eee", fontFamily: "monospace" },
+  loader: { padding: "100px", color: "#00ff88", textAlign: "center" },
+  nav: { display: "flex", justifyContent: "space-between", marginBottom: "60px", borderBottom: "1px solid #111", paddingBottom: "20px" },
+  logo: { fontSize: "20px", color: "#00ff88", letterSpacing: "2px" },
+  userZone: { display: "flex", gap: "20px", alignItems: "center" },
+  username: { color: "#666" },
+  logoutBtn: { background: "none", border: "none", color: "#ff4444", cursor: "pointer", fontWeight: "bold" },
+  content: { maxWidth: "1200px", margin: "0 auto" },
+  header: { display: "flex", justifyContent: "space-between", marginBottom: "40px" },
+  subtitle: { color: "#444" },
+  createBtn: { backgroundColor: "#00ff88", color: "#000", border: "none", padding: "12px 25px", fontWeight: "bold", cursor: "pointer" },
+  grid: { display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))", gap: "20px" },
+  card: { backgroundColor: "#0a0a0a", border: "1px solid #111", padding: "20px", cursor: "pointer", position: "relative" },
+  cardTitle: { color: "#fff", margin: 0 },
+  delBtn: { position: "absolute", top: "5px", right: "5px", background: "none", border: "none", color: "#333", cursor: "pointer", fontSize: "18px" }
 };

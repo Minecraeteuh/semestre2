@@ -20,7 +20,7 @@
     "order": {
       "type": "integer"
     },
-    "deadline": {
+    "duedate": {
       "type": "datetime"
     },
     "board": {
@@ -34,6 +34,9 @@
       "relation": "manyToOne",
       "target": "api::list.list",
       "inversedBy": "cards"
+    },
+    "label": {
+      "type": "string"
     }
   }
 }

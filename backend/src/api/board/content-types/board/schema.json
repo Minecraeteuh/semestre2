@@ -28,7 +28,7 @@
       "relation": "oneToMany",
       "target": "api::list.list"
     },
-    "author": {
+    "users_permissions_user": {
       "type": "relation",
       "relation": "manyToOne",
       "target": "plugin::users-permissions.user",

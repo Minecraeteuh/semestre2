@@ -4,85 +4,87 @@ import api from "../services/api";
 
 export default function Auth() {
   const [isLogin, setIsLogin] = useState(true);
-  const [formData, setFormData] = useState({ username: "", email: "", password: "" });
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     setError("");
+
+    const formData = new FormData(e.target);
+    const email = formData.get("email");
+    const password = formData.get("password");
+    const username = formData.get("username");
 
     try {
       if (isLogin) {
+        // 🔐 CONNEXION : Strapi attend "identifier" et "password"
         const res = await api.post("/auth/local", {
-          identifier: formData.email,
-          password: formData.password,
+          identifier: email, // Strapi utilise 'identifier' pour l'email ou le username
+          password: password,
         });
+        
         localStorage.setItem("jwt", res.data.jwt);
         localStorage.setItem("user", JSON.stringify(res.data.user));
         navigate("/dashboard");
       } else {
+        // 📝 INSCRIPTION
         const res = await api.post("/auth/local/register", {
-          username: formData.username,
-          email: formData.email,
-          password: formData.password,
+          username: username,
+          email: email,
+          password: password,
         });
+        
         localStorage.setItem("jwt", res.data.jwt);
         localStorage.setItem("user", JSON.stringify(res.data.user));
         navigate("/dashboard");
       }
     } catch (err) {
-      setError("ERREUR_SYSTEM: Identifiants invalides.");
-      console.error(err);
+      console.error("DÉTAILS ERREUR AUTH:", err.response?.data);
+      setError(err.response?.data?.error?.message || "Identifiants invalides.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div style={s.page}>
-      <div style={s.box}>
-        <h1 style={s.title}>SupTaskFlow</h1>
-        <p style={s.subtitle}>{isLogin ? ">_AUTH_REQUIRED" : ">_CREATE_IDENTITY"}</p>
-
-        {error && <div style={s.error}>{error}</div>}
+      <div style={s.container}>
+        <h1 style={s.logo}>SupTaskFlow</h1>
+        <p style={s.status}>&gt;_AUTH_REQUIRED</p>
 
         <form onSubmit={handleSubmit} style={s.form}>
+          {error && <div style={s.errorBadge}>ERREUR_SYSTEM: {error}</div>}
+          
           {!isLogin && (
-            <input
-              type="text"
-              name="username"
-              placeholder="USERNAME"
-              onChange={handleChange}
-              style={s.input}
-              required
-            />
+            <input name="username" placeholder="USERNAME" style={s.input} required />
           )}
-          <input
-            type="email"
-            name="email"
-            placeholder="EMAIL_ADDRESS"
-            onChange={handleChange}
-            style={s.input}
-            required
+          
+          <input 
+            name="email" 
+            type="text" 
+            placeholder="EMAIL_OR_USER" 
+            style={s.input} 
+            required 
           />
-          <input
-            type="password"
-            name="password"
-            placeholder="PASSWORD"
-            onChange={handleChange}
-            style={s.input}
-            required
+          
+          <input 
+            name="password" 
+            type="password" 
+            placeholder="PASSWORD" 
+            style={s.input} 
+            required 
           />
-          <button type="submit" style={s.submitBtn}>
-            {isLogin ? "[ LOGIN ]" : "[ REGISTER ]"}
+
+          <button type="submit" style={s.btn} disabled={loading}>
+            {loading ? "_PROCESSING..." : `[ ${isLogin ? "LOGIN" : "REGISTER"} ]`}
           </button>
         </form>
 
-        <button onClick={() => setIsLogin(!isLogin)} style={s.switchBtn}>
-          {isLogin ? "// No account? register_here" : "// Back to login"}
+        <button onClick={() => setIsLogin(!isLogin)} style={s.switch}>
+          // {isLogin ? "No account? register_here" : "Have account? login_here"}
         </button>
       </div>
     </div>
@@ -90,13 +92,13 @@ export default function Auth() {
 }
 
 const s = {
-  page: { display: "flex", justifyContent: "center", alignItems: "center", height: "100vh", backgroundColor: "#050505", fontFamily: "monospace", color: "#eee" },
-  box: { backgroundColor: "#0a0a0a", padding: "40px", border: "1px solid #111", width: "100%", maxWidth: "380px" },
-  title: { color: "#00ff88", margin: "0", fontSize: "22px", letterSpacing: "3px", textAlign: "center" },
-  subtitle: { color: "#444", fontSize: "11px", textAlign: "center", marginBottom: "30px" },
+  page: { height: "100vh", backgroundColor: "#050505", display: "flex", justifyContent: "center", alignItems: "center", fontFamily: "monospace" },
+  container: { width: "350px", padding: "40px", borderLeft: "2px solid #111" },
+  logo: { color: "#00ff88", fontSize: "28px", marginBottom: "5px", textAlign: "center" },
+  status: { color: "#333", fontSize: "10px", textAlign: "center", marginBottom: "40px" },
   form: { display: "flex", flexDirection: "column", gap: "15px" },
-  input: { backgroundColor: "#050505", border: "1px solid #222", color: "#00ff88", padding: "12px", fontFamily: "monospace", outline: "none" },
-  submitBtn: { backgroundColor: "#00ff88", color: "#000", border: "none", padding: "12px", fontWeight: "bold", cursor: "pointer", marginTop: "10px" },
-  switchBtn: { background: "none", border: "none", color: "#444", width: "100%", marginTop: "20px", cursor: "pointer", fontSize: "11px" },
-  error: { color: "#ff4444", border: "1px solid #ff4444", padding: "10px", marginBottom: "15px", fontSize: "12px", textAlign: "center" }
+  input: { backgroundColor: "#000", border: "1px solid #111", padding: "12px", color: "#00ff88", outline: "none" },
+  btn: { backgroundColor: "#00ff88", color: "#000", border: "none", padding: "12px", fontWeight: "bold", cursor: "pointer", marginTop: "10px" },
+  errorBadge: { border: "1px solid #ff4444", color: "#ff4444", padding: "10px", fontSize: "11px", marginBottom: "10px" },
+  switch: { background: "none", border: "none", color: "#222", fontSize: "10px", marginTop: "20px", cursor: "pointer", width: "100%" }
 };

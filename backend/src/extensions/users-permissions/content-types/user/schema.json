@@ -70,7 +70,7 @@
       "type": "relation",
       "relation": "oneToMany",
       "target": "api::board.board",
-      "mappedBy": "author"
+      "mappedBy": "users_permissions_user"
     }
   }
 }
