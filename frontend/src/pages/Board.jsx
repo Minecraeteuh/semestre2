@@ -21,16 +21,16 @@ export default function Board() {
       setBoard(b.data.data);
       const l = await api.get(`/lists?filters[board][documentId][$eq]=${boardId}&populate=*`);
       setLists(l.data.data || []);
-    } catch (e) { console.error("Erreur fetchAll:", e); }
+    } catch (e) {
+      console.error("Erreur lors de la récupération des données du tableau:", e);
+    }
   };
 
-  // fonction de mise à jour
   const onUpdateCard = async (e) => {
     e.preventDefault();
     setIsUpdating(true);
     const formData = new FormData(e.target);
-    
-    // date du formulaire
+
     const rawDate = formData.get("duedate");
 
     const payload = {
@@ -45,42 +45,54 @@ export default function Board() {
 
     try {
       const docId = editingCard.documentId || editingCard.id;
-      
       await api.put(`/cards/${docId}`, payload);
-      
       setEditingCard(null);
       fetchAll();
     } catch (err) {
-      console.error("Détails Erreur API:", err.response?.data);
-      alert(`ERREUR 400 : Impossible d'enregistrer les modifications de la tâche.`);
+      console.error("Erreur de mise à jour:", err);
+      alert("Impossible d'enregistrer les modifications de la tâche. Veuillez réessayer plus tard.");
     } finally {
       setIsUpdating(false);
     }
   };
 
   const onAddList = async () => {
-    const name = prompt("Nom de la colonne");
+    const name = prompt("Saisissez le nom de la nouvelle liste :");
     if (!name) return;
-    await api.post("/lists", { data: { name, board: board.id, publishedAt: new Date() } });
-    fetchAll();
+
+    try {
+      await api.post("/lists", { data: { name, board: board.id, publishedAt: new Date() } });
+      fetchAll();
+    } catch (err) {
+      console.error("Erreur de création de liste:", err);
+    }
   };
 
   const onAddCard = async (listId) => {
-    const title = prompt("Titre de la tâche");
+    const title = prompt("Saisissez le titre de la nouvelle tâche :");
     if (!title) return;
-    await api.post("/cards", { data: { title, list: listId, publishedAt: new Date() } });
-    fetchAll();
+
+    try {
+      await api.post("/cards", { data: { title, list: listId, publishedAt: new Date() } });
+      fetchAll();
+    } catch (err) {
+      console.error("Erreur de création de tâche:", err);
+    }
   };
 
   const onDeleteCard = async () => {
-    if (!confirm("Supprimer cette tâche ?")) return;
-    const docId = editingCard.documentId || editingCard.id;
-    await api.delete(`/cards/${docId}`);
-    setEditingCard(null);
-    fetchAll();
+    if (!window.confirm("Êtes-vous sûr de vouloir supprimer cette tâche ? Cette action est irréversible.")) return;
+
+    try {
+      const docId = editingCard.documentId || editingCard.id;
+      await api.delete(`/cards/${docId}`);
+      setEditingCard(null);
+      fetchAll();
+    } catch (err) {
+      console.error("Erreur de suppression:", err);
+    }
   };
 
-  //drag and drop
   const handleDragStart = (e, card, sourceListId) => {
     e.dataTransfer.setData("cardId", card.documentId || card.id);
     e.dataTransfer.setData("sourceListId", sourceListId);
@@ -90,10 +102,13 @@ export default function Board() {
     e.preventDefault();
     const cardId = e.dataTransfer.getData("cardId");
     if (e.dataTransfer.getData("sourceListId") === targetListId) return;
+
     try {
       await api.put(`/cards/${cardId}`, { data: { list: targetListId } });
       fetchAll();
-    } catch (err) { console.error("Erreur DND:", err); }
+    } catch (err) {
+      console.error("Erreur lors du déplacement:", err);
+    }
   };
 
   if (!board) return <div className="board-loader">Chargement du tableau...</div>;
@@ -102,7 +117,7 @@ export default function Board() {
       <div className="board-page">
         <header className="board-nav">
           <div className="board-nav-left">
-            <button onClick={() => navigate("/dashboard")} className="board-back-btn">←</button>
+            <button onClick={() => navigate("/dashboard")} className="board-back-btn">Retour</button>
             <h1 className="board-title">{board.title || board.attributes?.title}</h1>
           </div>
           <div className="board-status">Tableau à jour</div>
@@ -121,17 +136,17 @@ export default function Board() {
                       return (
                           <article key={c.id} className="board-card" draggable onDragStart={e => handleDragStart(e, c, listId)} onClick={() => setEditingCard(c)}>
                             {d.label && <span className="board-badge">{d.label}</span>}
-                            <div className="fw-bold">{d.title}</div>
-                            {d.duedate && <div className="board-date">{new Date(d.duedate).toLocaleDateString()}</div>}
+                            <div className="board-card-title">{d.title}</div>
+                            {d.duedate && <div className="board-date">📅 {new Date(d.duedate).toLocaleDateString()}</div>}
                           </article>
                       );
                     })}
                   </div>
-                  <button onClick={() => onAddCard(listId)} className="board-add-btn">+ Nouvelle tâche</button>
+                  <button onClick={() => onAddCard(listId)} className="board-add-btn">+ Ajouter une tâche</button>
                 </section>
             );
           })}
-          <button onClick={onAddList} className="board-new-column">+ NEW_COLUMN</button>
+          <button onClick={onAddList} className="board-new-column">+ Nouvelle liste</button>
         </main>
 
         {editingCard && (
@@ -139,23 +154,26 @@ export default function Board() {
               <div className="modal-content">
                 <h2 className="modal-title">Modifier la tâche</h2>
                 <form onSubmit={onUpdateCard} className="modal-form">
-                  <input name="title" defaultValue={editingCard.title || editingCard.attributes?.title} className="modal-input" required />
-                  <textarea name="description" defaultValue={editingCard.description || editingCard.attributes?.description} className="modal-area" placeholder="description" rows="4" />
+                  <input name="title" defaultValue={editingCard.title || editingCard.attributes?.title} className="modal-input" required placeholder="Titre de la tâche" />
+                  <textarea name="description" defaultValue={editingCard.description || editingCard.attributes?.description} className="modal-area" placeholder="Description détaillée..." />
+
                   <div className="modal-group">
                     <div className="modal-flex-1">
-                      <label className="modal-mini-label">DATE D'ÉCHÉANCE</label>
+                      <label className="modal-mini-label">Échéance</label>
                       <input type="date" name="duedate" defaultValue={(editingCard.duedate || editingCard.attributes?.duedate)?.split('T')[0]} className="modal-input" />
                     </div>
                     <div className="modal-flex-1">
-                      <label className="modal-mini-label">LABEL</label>
-                      <input name="label" defaultValue={editingCard.label || editingCard.attributes?.label} className="modal-input" placeholder="label" />
+                      <label className="modal-mini-label">Étiquette</label>
+                      <input name="label" defaultValue={editingCard.label || editingCard.attributes?.label} className="modal-input" placeholder="Ex: Urgent, Bug..." />
                     </div>
                   </div>
+
                   <input type="hidden" name="order" defaultValue={editingCard.order || editingCard.attributes?.order || 0} />
+
                   <div className="modal-actions">
-                    <button type="button" onClick={onDeleteCard} className="modal-del-btn">[ SUPPRIMER ]</button>
-                    <button type="submit" className="modal-save-btn" disabled={isUpdating}>{isUpdating ? "_envoi..." : "enregistrer"}</button>
-                    <button type="button" onClick={() => setEditingCard(null)} className="modal-close-btn">[ X ]</button>
+                    <button type="button" onClick={onDeleteCard} className="modal-btn modal-del-btn">Supprimer</button>
+                    <button type="button" onClick={() => setEditingCard(null)} className="modal-btn modal-close-btn">Annuler</button>
+                    <button type="submit" className="modal-btn modal-save-btn" disabled={isUpdating}>{isUpdating ? "Enregistrement..." : "Enregistrer"}</button>
                   </div>
                 </form>
               </div>
