@@ -111,42 +111,42 @@ export default function Board() {
     }
   };
 
-  if (!board) return <div className="board-loader">Chargement du tableau...</div>;
+  if (!board) return <div className="loader">Chargement du tableau...</div>;
 
   return (
-      <div className="board-page">
-        <header className="board-nav">
-          <div className="board-nav-left">
-            <button onClick={() => navigate("/dashboard")} className="board-back-btn">Retour</button>
-            <h1 className="board-title">{board.title || board.attributes?.title}</h1>
+      <div className="page">
+        <header className="nav">
+          <div className="nav-left">
+            <button onClick={() => navigate("/dashboard")} className="back-btn">Retour</button>
+            <h1 className="title">{board.title || board.attributes?.title}</h1>
           </div>
-          <div className="board-status">Tableau à jour</div>
+          <div className="status">Tableau à jour</div>
         </header>
 
-        <main className="board-container">
+        <main className="container">
           {lists.map(list => {
             const listId = list.documentId || list.id;
             const cards = list.cards || list.attributes?.cards?.data || [];
             return (
-                <section key={list.id} className="board-list" onDragOver={e => e.preventDefault()} onDrop={e => handleDrop(e, listId)}>
-                  <div className="board-list-head">{list.name || list.attributes?.name}</div>
-                  <div className="board-card-stack">
+                <section key={list.id} className="list" onDragOver={e => e.preventDefault()} onDrop={e => handleDrop(e, listId)}>
+                  <div className="list-head">{list.name || list.attributes?.name}</div>
+                  <div className="card-stack">
                     {cards.map(c => {
                       const d = c.attributes || c;
                       return (
-                          <article key={c.id} className="board-card" draggable onDragStart={e => handleDragStart(e, c, listId)} onClick={() => setEditingCard(c)}>
-                            {d.label && <span className="board-badge">{d.label}</span>}
-                            <div className="board-card-title">{d.title}</div>
-                            {d.duedate && <div className="board-date">📅 {new Date(d.duedate).toLocaleDateString()}</div>}
+                          <article key={c.id} className="card" draggable onDragStart={e => handleDragStart(e, c, listId)} onClick={() => setEditingCard(c)}>
+                            {d.label && <span className="badge">{d.label}</span>}
+                            <div className="card-title">{d.title}</div>
+                            {d.duedate && <div className="date">{new Date(d.duedate).toLocaleDateString()}</div>}
                           </article>
                       );
                     })}
                   </div>
-                  <button onClick={() => onAddCard(listId)} className="board-add-btn">+ Ajouter une tâche</button>
+                  <button onClick={() => onAddCard(listId)} className="add-btn">+ Ajouter une tâche</button>
                 </section>
             );
           })}
-          <button onClick={onAddList} className="board-new-column">+ Nouvelle liste</button>
+          <button onClick={onAddList} className="new-column">+ Nouvelle liste</button>
         </main>
 
         {editingCard && (

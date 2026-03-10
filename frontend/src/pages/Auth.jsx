@@ -51,35 +51,35 @@ export default function Auth() {
   };
 
   return (
-      <div className="auth-page">
-        <div className="auth-container">
-          <h1 className="auth-logo">SupTaskFlow</h1>
-          <p className="auth-status">&gt;Veuillez vous connecter</p>
-          <form onSubmit={handleSubmit} className="auth-form">
-            {error && <div className="auth-error-badge">Erreur : {error}</div>}
+      <div className="page">
+        <div className="container">
+          <h1 className="logo">SupTaskFlow</h1>
+          <p className="status">&gt;Veuillez vous connecter</p>
+          <form onSubmit={handleSubmit} className="form">
+            {error && <div className="error-badge">Erreur : {error}</div>}
             {!isLogin && (
-                <input name="username" placeholder="Nom d'utilisateur" className="auth-input" required />
+                <input name="username" placeholder="Nom d'utilisateur" className="input" required />
             )}
             <input
                 name="email"
                 type="text"
                 placeholder="Email ou nom d'utilisateur"
-                className="auth-input"
+                className="input"
                 required
             />
             <input
                 name="password"
                 type="password"
                 placeholder="Mot de passe"
-                className="auth-input"
+                className="input"
                 required
             />
-            <button type="submit" className="auth-btn" disabled={loading}>
+            <button type="submit" className="btn" disabled={loading}>
               {loading ? "Chargement... ": `[ ${isLogin ? "LOGIN" : "REGISTER"} ]`}
             </button>
           </form>
 
-          <button onClick={() => setIsLogin(!isLogin)} className="auth-switch">
+          <button onClick={() => setIsLogin(!isLogin)} className="switch">
             // {isLogin ? "Pas encore de compte ? Crééez-en un ici" : "Vous avez déjà un compte ? Connectez-vous ici"}
           </button>
         </div>

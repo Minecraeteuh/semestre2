@@ -78,32 +78,32 @@ export default function Dashboard() {
     navigate("/", { replace: true });
   };
 
-  if (loading) return <div className="dash-loader">Chargement des projets...</div>;
+  if (loading) return <div className="loader">Chargement des projets...</div>;
 
   return (
-      <div className="dash-page">
-        <nav className="dash-nav">
-          <h1 className="dash-logo">SupTaskFlow</h1>
-          <div className="dash-user-zone">
-            <span className="dash-username">{user?.username}</span>
-            <button onClick={handleLogout} className="dash-logout-btn">Déconnexion</button>
+      <div className="page">
+        <nav className="nav">
+          <h1 className="logo">SupTaskFlow</h1>
+          <div className="user-zone">
+            <span className="username">{user?.username}</span>
+            <button onClick={handleLogout} className="logout-btn">Déconnexion</button>
           </div>
         </nav>
 
-        <div className="dash-content">
-          <div className="dash-header">
-            <h2 className="dash-subtitle">Mes projets</h2>
-            <button onClick={onCreateBoard} className="dash-create-btn">+ Nouveau projet</button>
+        <div className="content">
+          <div className="header">
+            <h2 className="subtitle">Mes projets</h2>
+            <button onClick={onCreateBoard} className="create-btn">+ Nouveau projet</button>
           </div>
 
-          <div className="dash-grid">
+          <div className="grid">
             {boards.length === 0 ? (
-                <div className="dash-empty">Aucun projet trouvé. Créez votre premier projet pour commencer.</div>
+                <div className="empty">Aucun projet trouvé. Créez votre premier projet pour commencer.</div>
             ) : (
                 boards.map((b) => (
-                    <div key={b.id} onClick={() => navigate(`/board/${b.documentId || b.id}`)} className="dash-card">
-                      <h3 className="dash-card-title">{b.title || b.attributes?.title}</h3>
-                      <button onClick={(e) => onDeleteBoard(b, e)} className="dash-del-btn" title="Supprimer le projet">×</button>
+                    <div key={b.id} onClick={() => navigate(`/board/${b.documentId || b.id}`)} className="card">
+                      <h3 className="card-title">{b.title || b.attributes?.title}</h3>
+                      <button onClick={(e) => onDeleteBoard(b, e)} className="del-btn" title="Supprimer le projet">×</button>
                     </div>
                 ))
             )}

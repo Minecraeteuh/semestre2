@@ -1,4 +1,4 @@
-.board-page {
+.page {
     padding: 40px;
     background-color: #000;
     min-height: 100vh;
@@ -6,14 +6,14 @@
     font-family: "Inter", system-ui, -apple-system, sans-serif;
 }
 
-.board-loader {
+.loader {
     padding: 100px;
     color: #888;
     text-align: center;
     font-size: 15px;
 }
 
-.board-nav {
+.nav {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -22,20 +22,20 @@
     padding-bottom: 20px;
 }
 
-.board-nav-left {
+.nav-left {
     display: flex;
     gap: 16px;
     align-items: center;
 }
 
-.board-title {
+.title {
     font-size: 20px;
     font-weight: 600;
     margin: 0;
     letter-spacing: -0.01em;
 }
 
-.board-back-btn {
+.back-btn {
     background: #111;
     border: 1px solid #222;
     border-radius: 6px;
@@ -46,16 +46,16 @@
     transition: background-color 0.2s;
 }
 
-.board-back-btn:hover {
+.back-btn:hover {
     background: #222;
 }
 
-.board-status {
+.status {
     color: #888;
     font-size: 13px;
 }
 
-.board-container {
+.container {
     display: flex;
     gap: 20px;
     overflow-x: auto;
@@ -63,7 +63,7 @@
     align-items: flex-start;
 }
 
-.board-list {
+.list {
     background-color: #050505;
     border: 1px solid #222;
     width: 300px;
@@ -74,21 +74,21 @@
     flex-direction: column;
 }
 
-.board-list-head {
+.list-head {
     font-weight: 600;
     font-size: 14px;
     margin-bottom: 16px;
     color: #eee;
 }
 
-.board-card-stack {
+.card-stack {
     display: flex;
     flex-direction: column;
     gap: 10px;
     min-height: 20px;
 }
 
-.board-card {
+.card {
     background-color: #111;
     border: 1px solid #222;
     border-radius: 8px;
@@ -97,15 +97,15 @@
     transition: border-color 0.2s;
 }
 
-.board-card:hover {
+.card:hover {
     border-color: #444;
 }
 
-.board-card:active {
+.card:active {
     cursor: grabbing;
 }
 
-.board-badge {
+.badge {
     font-size: 11px;
     background-color: rgba(255, 255, 255, 0.1);
     color: #ccc;
@@ -116,14 +116,14 @@
     font-weight: 500;
 }
 
-.board-card-title {
+.card-title {
     font-size: 14px;
     font-weight: 500;
     color: #fff;
     line-height: 1.4;
 }
 
-.board-date {
+.date {
     font-size: 12px;
     color: #666;
     margin-top: 10px;
@@ -132,7 +132,7 @@
     gap: 6px;
 }
 
-.board-add-btn {
+.add-btn {
     width: 100%;
     margin-top: 12px;
     background: none;
@@ -146,12 +146,12 @@
     transition: all 0.2s;
 }
 
-.board-add-btn:hover {
+.add-btn:hover {
     background: rgba(255, 255, 255, 0.05);
     color: #fff;
 }
 
-.board-new-column {
+.new-column {
     min-width: 300px;
     border: 1px dashed #333;
     border-radius: 10px;
@@ -164,7 +164,7 @@
     transition: all 0.2s;
 }
 
-.board-new-column:hover {
+.new-column:hover {
     background: rgba(255, 255, 255, 0.05);
     border-color: #555;
     color: #fff;
