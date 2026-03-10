@@ -1,4 +1,4 @@
-.page {
+.board-page {
     padding: 40px;
     background-color: #000;
     min-height: 100vh;
@@ -6,14 +6,14 @@
     font-family: "Inter", system-ui, -apple-system, sans-serif;
 }
 
-.loader {
+.board-loader {
     padding: 100px;
     color: #888;
     text-align: center;
     font-size: 15px;
 }
 
-.nav {
+.board-nav {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -22,20 +22,20 @@
     padding-bottom: 20px;
 }
 
-.nav-left {
+.board-nav-left {
     display: flex;
     gap: 16px;
     align-items: center;
 }
 
-.title {
+.board-title {
     font-size: 20px;
     font-weight: 600;
     margin: 0;
     letter-spacing: -0.01em;
 }
 
-.back-btn {
+.board-back-btn {
     background: #111;
     border: 1px solid #222;
     border-radius: 6px;
@@ -46,16 +46,16 @@
     transition: background-color 0.2s;
 }
 
-.back-btn:hover {
+.board-back-btn:hover {
     background: #222;
 }
 
-.status {
+.board-status {
     color: #888;
     font-size: 13px;
 }
 
-.container {
+.board-container {
     display: flex;
     gap: 20px;
     overflow-x: auto;
@@ -63,7 +63,7 @@
     align-items: flex-start;
 }
 
-.list {
+.board-list {
     background-color: #050505;
     border: 1px solid #222;
     width: 300px;
@@ -74,21 +74,21 @@
     flex-direction: column;
 }
 
-.list-head {
+.board-list-head {
     font-weight: 600;
     font-size: 14px;
     margin-bottom: 16px;
     color: #eee;
 }
 
-.card-stack {
+.board-card-stack {
     display: flex;
     flex-direction: column;
     gap: 10px;
     min-height: 20px;
 }
 
-.card {
+.board-card {
     background-color: #111;
     border: 1px solid #222;
     border-radius: 8px;
@@ -97,15 +97,15 @@
     transition: border-color 0.2s;
 }
 
-.card:hover {
+.board-card:hover {
     border-color: #444;
 }
 
-.card:active {
+.board-card:active {
     cursor: grabbing;
 }
 
-.badge {
+.board-badge {
     font-size: 11px;
     background-color: rgba(255, 255, 255, 0.1);
     color: #ccc;
@@ -116,14 +116,14 @@
     font-weight: 500;
 }
 
-.card-title {
+.board-card-title {
     font-size: 14px;
     font-weight: 500;
     color: #fff;
     line-height: 1.4;
 }
 
-.date {
+.board-date {
     font-size: 12px;
     color: #666;
     margin-top: 10px;
@@ -132,7 +132,7 @@
     gap: 6px;
 }
 
-.add-btn {
+.board-add-btn {
     width: 100%;
     margin-top: 12px;
     background: none;
@@ -146,12 +146,12 @@
     transition: all 0.2s;
 }
 
-.add-btn:hover {
+.board-add-btn:hover {
     background: rgba(255, 255, 255, 0.05);
     color: #fff;
 }
 
-.new-column {
+.board-new-column {
     min-width: 300px;
     border: 1px dashed #333;
     border-radius: 10px;
@@ -164,7 +164,7 @@
     transition: all 0.2s;
 }
 
-.new-column:hover {
+.board-new-column:hover {
     background: rgba(255, 255, 255, 0.05);
     border-color: #555;
     color: #fff;

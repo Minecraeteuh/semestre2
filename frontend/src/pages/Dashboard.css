@@ -1,4 +1,4 @@
-.page {
+.dash-page {
     padding: 40px;
     background-color: #000;
     min-height: 100vh;
@@ -6,14 +6,14 @@
     font-family: "Inter", system-ui, -apple-system, sans-serif;
 }
 
-.loader {
+.dash-loader {
     padding: 100px;
     color: #888;
     text-align: center;
     font-size: 15px;
 }
 
-.nav {
+.dash-nav {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -22,7 +22,7 @@
     padding-bottom: 20px;
 }
 
-.logo {
+.dash-logo {
     font-size: 20px;
     font-weight: 700;
     color: #fff;
@@ -30,19 +30,19 @@
     margin: 0;
 }
 
-.user-zone {
+.dash-user-zone {
     display: flex;
     gap: 20px;
     align-items: center;
 }
 
-.username {
+.dash-username {
     color: #888;
     font-size: 14px;
     font-weight: 500;
 }
 
-.logout-btn {
+.dash-logout-btn {
     background: rgba(255, 68, 68, 0.1);
     border: 1px solid rgba(255, 68, 68, 0.2);
     border-radius: 6px;
@@ -54,23 +54,23 @@
     transition: all 0.2s;
 }
 
-.logout-btn:hover {
+.dash-logout-btn:hover {
     background: rgba(255, 68, 68, 0.2);
 }
 
-.content {
+.dash-content {
     max-width: 1000px;
     margin: 0 auto;
 }
 
-.header {
+.dash-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 40px;
 }
 
-.subtitle {
+.dash-subtitle {
     color: #eee;
     font-size: 24px;
     font-weight: 600;
@@ -78,7 +78,7 @@
     letter-spacing: -0.02em;
 }
 
-.create-btn {
+.dash-create-btn {
     background-color: #fff;
     color: #000;
     border: none;
@@ -90,17 +90,17 @@
     transition: opacity 0.2s;
 }
 
-.create-btn:hover {
+.dash-create-btn:hover {
     opacity: 0.9;
 }
 
-.grid {
+.dash-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 24px;
 }
 
-.empty {
+.dash-empty {
     grid-column: 1 / -1;
     text-align: center;
     padding: 60px;
@@ -111,7 +111,7 @@
     font-size: 14px;
 }
 
-.card {
+.dash-card {
     background-color: #050505;
     border: 1px solid #222;
     border-radius: 10px;
@@ -125,12 +125,12 @@
     min-height: 120px;
 }
 
-.card:hover {
+.dash-card:hover {
     border-color: #444;
     transform: translateY(-2px);
 }
 
-.card-title {
+.dash-card-title {
     color: #fff;
     margin: 0 0 16px 0;
     font-size: 16px;
@@ -138,7 +138,7 @@
     line-height: 1.4;
 }
 
-.del-btn {
+.dash-del-btn {
     position: absolute;
     top: 12px;
     right: 12px;
@@ -156,7 +156,7 @@
     transition: all 0.2s;
 }
 
-.del-btn:hover {
+.dash-del-btn:hover {
     background: rgba(255, 68, 68, 0.1);
     color: #ff4444;
 }

@@ -1,4 +1,4 @@
-.page {
+.auth-page {
     height: 100vh;
     width: 100vw;
     background-color: #000;
@@ -9,7 +9,7 @@
     font-family: "Inter", system-ui, -apple-system, sans-serif;
 }
 
-.container {
+.auth-container {
     width: 100%;
     max-width: 400px;
     padding: 40px;
@@ -18,7 +18,7 @@
     border-radius: 12px;
 }
 
-.logo {
+.auth-logo {
     font-size: 24px;
     font-weight: 700;
     margin-bottom: 8px;
@@ -26,20 +26,20 @@
     letter-spacing: -0.02em;
 }
 
-.status {
+.auth-status {
     color: #666;
     font-size: 14px;
     text-align: center;
     margin-bottom: 32px;
 }
 
-.form {
+.auth-form {
     display: flex;
     flex-direction: column;
     gap: 16px;
 }
 
-.input {
+.auth-input {
     background-color: #000;
     border: 1px solid #222;
     border-radius: 6px;
@@ -50,11 +50,11 @@
     outline: none;
 }
 
-.input:focus {
+.auth-input:focus {
     border-color: #444;
 }
 
-.btn {
+.auth-btn {
     background-color: #fff;
     color: #000;
     border: none;
@@ -67,16 +67,16 @@
     transition: opacity 0.2s;
 }
 
-.btn:hover {
+.auth-btn:hover {
     opacity: 0.9;
 }
 
-.btn:disabled {
+.auth-btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
 }
 
-.error-badge {
+.auth-error-badge {
     background-color: rgba(255, 68, 68, 0.1);
     border: 1px solid #ff4444;
     color: #ff4444;
@@ -86,7 +86,7 @@
     margin-bottom: 16px;
 }
 
-.switch {
+.auth-switch {
     background: none;
     border: none;
     color: #666;
@@ -97,6 +97,6 @@
     text-align: center;
 }
 
-.switch:hover {
+.auth-switch:hover {
     color: #fff;
 }

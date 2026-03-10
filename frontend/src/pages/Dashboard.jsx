@@ -26,6 +26,7 @@ export default function Dashboard() {
       const res = await api.get(`/boards?populate=*&sort=createdAt:desc`);
       const allBoards = res.data.data || [];
 
+      // filtrage
       const myBoards = allBoards.filter((b) => {
         const boardAuthorId = b.authorId || b.attributes?.authorId;
         return String(boardAuthorId) === String(userId);
@@ -33,14 +34,14 @@ export default function Dashboard() {
 
       setBoards(myBoards);
     } catch (e) {
-      console.error("Erreur de récupération des projets:", e);
+      console.error("Erreur fetch:", e);
     } finally {
       setLoading(false);
     }
   };
 
   const onCreateBoard = async () => {
-    const title = window.prompt("Saisissez le nom du nouveau projet :");
+    const title = prompt("Nom du projet");
     if (!title) return;
 
     const payload = {
@@ -55,22 +56,19 @@ export default function Dashboard() {
       await api.post("/boards", payload);
       fetchBoards(user.id);
     } catch (e) {
-      console.error("Erreur de création du projet:", e);
-      alert("Impossible de créer le projet. Vérifiez votre connexion.");
+      console.error("ERREUR:", e.response?.data);
+      alert("Une erreur est survenue lors de la récupération de vos projets.");
     }
   };
 
   const onDeleteBoard = async (id, e) => {
     e.stopPropagation();
-    if (!window.confirm("Êtes-vous sûr de vouloir supprimer ce projet ? Toutes les données associées seront perdues.")) return;
-
+    if (!confirm("Supprimer ce projet ?")) return;
     try {
       const docId = id.documentId || id;
       await api.delete(`/boards/${docId}`);
       fetchBoards(user.id);
-    } catch (e) {
-      console.error("Erreur de suppression du projet:", e);
-    }
+    } catch (e) { console.error(e); }
   };
 
   const handleLogout = () => {
@@ -78,32 +76,30 @@ export default function Dashboard() {
     navigate("/", { replace: true });
   };
 
-  if (loading) return <div className="loader">Chargement des projets...</div>;
+  if (loading) return <div className="dash-loader">Chargement...</div>;
 
   return (
-      <div className="page">
-        <nav className="nav">
-          <h1 className="logo">SupTaskFlow</h1>
-          <div className="user-zone">
-            <span className="username">{user?.username}</span>
-            <button onClick={handleLogout} className="logout-btn">Déconnexion</button>
+      <div className="dash-page">
+        <nav className="dash-nav">
+          <h1 className="dash-logo">Tableau Kanban</h1>
+          <div className="dash-user-zone">
+            <span className="dash-username">{user?.username}</span>
+            <button onClick={handleLogout} className="dash-logout-btn">Déconnexion</button>
           </div>
         </nav>
-
-        <div className="content">
-          <div className="header">
-            <h2 className="subtitle">Mes projets</h2>
-            <button onClick={onCreateBoard} className="create-btn">+ Nouveau projet</button>
+        <div className="dash-content">
+          <div className="dash-header">
+            <h2 className="dash-subtitle">Mes projets</h2>
+            <button onClick={onCreateBoard} className="dash-create-btn">+ Nouveau projet</button>
           </div>
-
-          <div className="grid">
+          <div className="dash-grid">
             {boards.length === 0 ? (
-                <div className="empty">Aucun projet trouvé. Créez votre premier projet pour commencer.</div>
+                <div className="dash-empty">Aucun projet trouvé. Cliquer sur "+ Nouveau projet".</div>
             ) : (
                 boards.map((b) => (
-                    <div key={b.id} onClick={() => navigate(`/board/${b.documentId || b.id}`)} className="card">
-                      <h3 className="card-title">{b.title || b.attributes?.title}</h3>
-                      <button onClick={(e) => onDeleteBoard(b, e)} className="del-btn" title="Supprimer le projet">×</button>
+                    <div key={b.id} onClick={() => navigate(`/board/${b.documentId || b.id}`)} className="dash-card">
+                      <h3 className="dash-card-title">{b.title || b.attributes?.title}</h3>
+                      <button onClick={(e) => onDeleteBoard(b, e)} className="dash-del-btn">×</button>
                     </div>
                 ))
             )}
