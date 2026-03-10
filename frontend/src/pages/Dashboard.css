@@ -1,93 +1,162 @@
 .dash-page {
     padding: 40px;
-    background-color: #050505;
+    background-color: #000;
     min-height: 100vh;
-    color: #eee;
-    font-family: monospace;
+    color: #fff;
+    font-family: "Inter", system-ui, -apple-system, sans-serif;
 }
+
 .dash-loader {
     padding: 100px;
-    color: #00ff88;
+    color: #888;
     text-align: center;
+    font-size: 15px;
 }
+
 .dash-nav {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     margin-bottom: 60px;
-    border-bottom: 1px solid #111;
+    border-bottom: 1px solid #222;
     padding-bottom: 20px;
 }
+
 .dash-logo {
     font-size: 20px;
-    color: #00ff88;
-    letter-spacing: 2px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: -0.02em;
+    margin: 0;
 }
+
 .dash-user-zone {
     display: flex;
     gap: 20px;
     align-items: center;
 }
+
 .dash-username {
-    color: #666;
+    color: #888;
+    font-size: 14px;
+    font-weight: 500;
 }
+
 .dash-logout-btn {
-    background: none;
-    border: none;
+    background: rgba(255, 68, 68, 0.1);
+    border: 1px solid rgba(255, 68, 68, 0.2);
+    border-radius: 6px;
     color: #ff4444;
+    padding: 6px 12px;
     cursor: pointer;
-    font-weight: bold;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.2s;
 }
+
+.dash-logout-btn:hover {
+    background: rgba(255, 68, 68, 0.2);
+}
+
 .dash-content {
-    max-width: 1200px;
+    max-width: 1000px;
     margin: 0 auto;
 }
+
 .dash-header {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 40px;
     align-items: center;
+    margin-bottom: 40px;
 }
+
 .dash-subtitle {
-    color: #444;
+    color: #eee;
+    font-size: 24px;
+    font-weight: 600;
+    margin: 0;
+    letter-spacing: -0.02em;
 }
+
 .dash-create-btn {
-    background-color: #00ff88;
+    background-color: #fff;
     color: #000;
     border: none;
-    padding: 12px 25px;
-    font-weight: bold;
+    border-radius: 6px;
+    padding: 10px 16px;
+    font-size: 14px;
+    font-weight: 500;
     cursor: pointer;
+    transition: opacity 0.2s;
 }
+
+.dash-create-btn:hover {
+    opacity: 0.9;
+}
+
 .dash-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 25px;
+    gap: 24px;
 }
+
 .dash-empty {
     grid-column: 1 / -1;
     text-align: center;
-    padding: 50px;
-    border: 1px dashed #222;
-    color: #555;
+    padding: 60px;
+    border: 1px dashed #333;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.02);
+    color: #888;
+    font-size: 14px;
 }
+
 .dash-card {
-    background-color: #0a0a0a;
-    border: 1px solid #111;
-    padding: 25px;
+    background-color: #050505;
+    border: 1px solid #222;
+    border-radius: 10px;
+    padding: 24px;
     cursor: pointer;
     position: relative;
+    transition: all 0.2s;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 120px;
 }
+
+.dash-card:hover {
+    border-color: #444;
+    transform: translateY(-2px);
+}
+
 .dash-card-title {
     color: #fff;
-    margin: 0 0 15px 0;
+    margin: 0 0 16px 0;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1.4;
 }
+
 .dash-del-btn {
     position: absolute;
-    top: 10px;
-    right: 10px;
+    top: 12px;
+    right: 12px;
     background: none;
     border: none;
-    color: #444;
+    color: #666;
     cursor: pointer;
-    font-size: 20px;
+    font-size: 18px;
+    width: 28px;
+    height: 28px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.dash-del-btn:hover {
+    background: rgba(255, 68, 68, 0.1);
+    color: #ff4444;
 }
