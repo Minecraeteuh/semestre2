@@ -131,7 +131,7 @@ export default function Board() {
                 </section>
             );
           })}
-          <button onClick={onAddList} className="board-new-column">+ NEW_COLUMN</button>
+          <button onClick={onAddList} className="board-new-column">+ Nouvelle colonne</button>
         </main>
 
         {editingCard && (
@@ -143,7 +143,7 @@ export default function Board() {
                   <textarea name="description" defaultValue={editingCard.description || editingCard.attributes?.description} className="modal-area" placeholder="description" rows="4" />
                   <div className="modal-group">
                     <div className="modal-flex-1">
-                      <label className="modal-mini-label">DATE D'ÉCHÉANCE</label>
+                      <label className="modal-mini-label">Date d'échéance</label>
                       <input type="date" name="duedate" defaultValue={(editingCard.duedate || editingCard.attributes?.duedate)?.split('T')[0]} className="modal-input" />
                     </div>
                     <div className="modal-flex-1">
@@ -153,8 +153,8 @@ export default function Board() {
                   </div>
                   <input type="hidden" name="order" defaultValue={editingCard.order || editingCard.attributes?.order || 0} />
                   <div className="modal-actions">
-                    <button type="button" onClick={onDeleteCard} className="modal-del-btn">[ SUPPRIMER ]</button>
-                    <button type="submit" className="modal-save-btn" disabled={isUpdating}>{isUpdating ? "_envoi..." : "enregistrer"}</button>
+                    <button type="button" onClick={onDeleteCard} className="modal-del-btn">Supprimer</button>
+                    <button type="submit" className="modal-save-btn" disabled={isUpdating}>{isUpdating ? "_envoi..." : "Enregistrer"}</button>
                     <button type="button" onClick={() => setEditingCard(null)} className="modal-close-btn">[ X ]</button>
                   </div>
                 </form>
