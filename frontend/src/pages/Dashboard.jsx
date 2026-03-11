@@ -1,7 +1,10 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../services/api";
+import { boardService } from "../services/boardService";
 import "./Dashboard.css";
+
+import Navbar from "../components/Navbar";
+import ProjectCard from "../components/ProjectCard";
 
 export default function Dashboard() {
   const [boards, setBoards] = useState([]);
@@ -14,61 +17,47 @@ export default function Dashboard() {
     if (storedUser) {
       const u = JSON.parse(storedUser);
       setUser(u);
-      fetchBoards(u.id);
+      loadBoards(u.id);
     } else {
       navigate("/", { replace: true });
     }
   }, [navigate]);
 
-  const fetchBoards = async (userId) => {
+  const loadBoards = async (userId) => {
     try {
       setLoading(true);
-      const res = await api.get(`/boards?populate=*&sort=createdAt:desc`);
-      const allBoards = res.data.data || [];
-
-      // filtrage
-      const myBoards = allBoards.filter((b) => {
-        const boardAuthorId = b.authorId || b.attributes?.authorId;
-        return String(boardAuthorId) === String(userId);
-      });
-
+      const myBoards = await boardService.getUserBoards(userId);
       setBoards(myBoards);
     } catch (e) {
-      console.error("Erreur fetch:", e);
+      console.error("Erreur de récupération des projets:", e);
     } finally {
       setLoading(false);
     }
   };
 
-  const onCreateBoard = async () => {
-    const title = prompt("Nom du projet");
+  const handleCreateBoard = async () => {
+    const title = window.prompt("Saisissez le nom du nouveau projet :");
     if (!title) return;
 
-    const payload = {
-      data: {
-        title: title,
-        authorId: String(user.id),
-        publishedAt: new Date().toISOString()
-      }
-    };
-
     try {
-      await api.post("/boards", payload);
-      fetchBoards(user.id);
+      await boardService.createBoard(title, user.id);
+      loadBoards(user.id);
     } catch (e) {
-      console.error("ERREUR:", e.response?.data);
-      alert("Une erreur est survenue lors de la récupération de vos projets.");
+      console.error("Erreur de création du projet:", e);
+      alert("Impossible de créer le projet. Vérifiez votre connexion.");
     }
   };
 
-  const onDeleteBoard = async (id, e) => {
-    e.stopPropagation();
-    if (!confirm("Supprimer ce projet ?")) return;
+  const handleDeleteBoard = async (project) => {
+    if (!window.confirm("Êtes-vous sûr de vouloir supprimer ce projet ? Toutes les données associées seront perdues.")) return;
+
     try {
-      const docId = id.documentId || id;
-      await api.delete(`/boards/${docId}`);
-      fetchBoards(user.id);
-    } catch (e) { console.error(e); }
+      const docId = project.documentId || project.id;
+      await boardService.deleteBoard(docId);
+      loadBoards(user.id);
+    } catch (e) {
+      console.error("Erreur de suppression du projet:", e);
+    }
   };
 
   const handleLogout = () => {
@@ -76,31 +65,29 @@ export default function Dashboard() {
     navigate("/", { replace: true });
   };
 
-  if (loading) return <div className="dash-loader">Chargement...</div>;
+  if (loading) return <div className="dash-loader">Chargement des projets...</div>;
 
   return (
       <div className="dash-page">
-        <nav className="dash-nav">
-          <h1 className="dash-logo">Tableau Kanban</h1>
-          <div className="dash-user-zone">
-            <span className="dash-username">{user?.username}</span>
-            <button onClick={handleLogout} className="dash-logout-btn">Déconnexion</button>
-          </div>
-        </nav>
+        <Navbar user={user} onLogout={handleLogout} />
+
         <div className="dash-content">
           <div className="dash-header">
             <h2 className="dash-subtitle">Mes projets</h2>
-            <button onClick={onCreateBoard} className="dash-create-btn">+ Nouveau projet</button>
+            <button onClick={handleCreateBoard} className="dash-create-btn">+ Nouveau projet</button>
           </div>
+
           <div className="dash-grid">
             {boards.length === 0 ? (
-                <div className="dash-empty">Aucun projet trouvé. Cliquer sur "+ Nouveau projet".</div>
+                <div className="dash-empty">Aucun projet trouvé. Créez votre premier projet pour commencer.</div>
             ) : (
                 boards.map((b) => (
-                    <div key={b.id} onClick={() => navigate(`/board/${b.documentId || b.id}`)} className="dash-card">
-                      <h3 className="dash-card-title">{b.title || b.attributes?.title}</h3>
-                      <button onClick={(e) => onDeleteBoard(b, e)} className="dash-del-btn">×</button>
-                    </div>
+                    <ProjectCard
+                        key={b.id}
+                        project={b}
+                        onClick={() => navigate(`/board/${b.documentId || b.id}`)}
+                        onDelete={handleDeleteBoard}
+                    />
                 ))
             )}
           </div>
