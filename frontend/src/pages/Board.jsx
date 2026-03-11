@@ -15,6 +15,7 @@ import { SortableContext, horizontalListSortingStrategy, arrayMove } from "@dnd-
 
 import BoardList from "../components/BoardList";
 import TaskModal from "../components/TaskModal";
+import CustomPrompt from "../components/CustomPrompt";
 
 const dropAnimationConfig = {
   duration: 250,
@@ -32,6 +33,14 @@ export default function Board() {
   const [isUpdating, setIsUpdating] = useState(false);
   const [activeColumn, setActiveColumn] = useState(null);
   const [activeCard, setActiveCard] = useState(null);
+
+  const [promptConfig, setPromptConfig] = useState({
+    isOpen: false,
+    title: "",
+    defaultValue: "",
+    isConfirm: false,
+    onConfirm: () => {}
+  });
 
   const sensors = useSensors(
       useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
@@ -51,26 +60,49 @@ export default function Board() {
     } catch (e) { console.error(e); }
   };
 
-  const onDeleteList = async (listId) => {
-    if (!window.confirm("Voulez-vous vraiment supprimer cette colonne ET toutes les tâches à l'intérieur ?")) return;
-    try {
-      const listToDelete = lists.find(l => String(l.documentId || l.id) === String(listId));
-      const cards = listToDelete?.cards || listToDelete?.attributes?.cards?.data || [];
-
-      await Promise.all(cards.map(c => cardService.deleteCard(c.documentId || c.id)));
-      await listService.deleteList(listId);
-
-      fetchAll();
-    } catch (err) { console.error(err); }
+  const closePrompt = () => {
+    setPromptConfig(prev => ({ ...prev, isOpen: false }));
   };
 
-  const onRenameList = async (listId, currentName) => {
-    const newName = prompt("Nouveau nom de la colonne :", currentName);
-    if (!newName || newName === currentName) return;
-    try {
-      await listService.updateList(listId, { name: newName });
-      fetchAll();
-    } catch (err) { console.error(err); }
+  const onDeleteList = (listId) => {
+    setPromptConfig({
+      isOpen: true,
+      title: "Voulez-vous vraiment supprimer cette colonne ET toutes les tâches à l'intérieur ?",
+      defaultValue: "",
+      isConfirm: true,
+      onConfirm: async () => {
+        try {
+          const listToDelete = lists.find(l => String(l.documentId || l.id) === String(listId));
+          const cards = listToDelete?.cards || listToDelete?.attributes?.cards?.data || [];
+
+          await Promise.all(cards.map(c => cardService.deleteCard(c.documentId || c.id)));
+          await listService.deleteList(listId);
+
+          fetchAll();
+        } catch (err) { console.error(err); }
+        closePrompt();
+      }
+    });
+  };
+
+  const onRenameList = (listId, currentName) => {
+    setPromptConfig({
+      isOpen: true,
+      title: "Nouveau nom de la colonne :",
+      defaultValue: currentName,
+      isConfirm: false,
+      onConfirm: async (newName) => {
+        if (!newName || newName === currentName) {
+          closePrompt();
+          return;
+        }
+        try {
+          await listService.updateList(listId, { name: newName });
+          fetchAll();
+        } catch (err) { console.error(err); }
+        closePrompt();
+      }
+    });
   };
 
   const onUpdateCard = async (e) => {
@@ -96,36 +128,66 @@ export default function Board() {
     finally { setIsUpdating(false); }
   };
 
-  const onAddList = async () => {
-    const name = prompt("Saisissez le nom de la nouvelle liste :");
-    if (!name) return;
-    const newOrder = lists.length > 0 ? Math.max(...lists.map(l => l.attributes?.order ?? l.order ?? 0)) + 1 : 1;
-    try {
-      await listService.createList(name, board.id, newOrder);
-      fetchAll();
-    } catch (err) { console.error(err); }
+  const onAddList = () => {
+    setPromptConfig({
+      isOpen: true,
+      title: "Saisissez le nom de la nouvelle liste :",
+      defaultValue: "",
+      isConfirm: false,
+      onConfirm: async (name) => {
+        if (!name) {
+          closePrompt();
+          return;
+        }
+        const newOrder = lists.length > 0 ? Math.max(...lists.map(l => l.attributes?.order ?? l.order ?? 0)) + 1 : 1;
+        try {
+          await listService.createList(name, board.id, newOrder);
+          fetchAll();
+        } catch (err) { console.error(err); }
+        closePrompt();
+      }
+    });
   };
 
-  const onAddCard = async (listId) => {
-    const title = prompt("Saisissez le titre de la nouvelle tâche :");
-    if (!title) return;
-    const targetList = lists.find(l => String(l.documentId || l.id) === String(listId));
-    const cards = targetList?.cards || targetList?.attributes?.cards?.data || [];
-    const newOrder = cards.length > 0 ? Math.max(...cards.map(c => c.attributes?.order ?? c.order ?? 0)) + 1 : 1;
-    try {
-      await cardService.createCard(title, listId, newOrder);
-      fetchAll();
-    } catch (err) { console.error(err); }
+  const onAddCard = (listId) => {
+    setPromptConfig({
+      isOpen: true,
+      title: "Saisissez le titre de la nouvelle tâche :",
+      defaultValue: "",
+      isConfirm: false,
+      onConfirm: async (title) => {
+        if (!title) {
+          closePrompt();
+          return;
+        }
+        const targetList = lists.find(l => String(l.documentId || l.id) === String(listId));
+        const cards = targetList?.cards || targetList?.attributes?.cards?.data || [];
+        const newOrder = cards.length > 0 ? Math.max(...cards.map(c => c.attributes?.order ?? c.order ?? 0)) + 1 : 1;
+        try {
+          await cardService.createCard(title, listId, newOrder);
+          fetchAll();
+        } catch (err) { console.error(err); }
+        closePrompt();
+      }
+    });
   };
 
-  const onDeleteCard = async () => {
-    if (!window.confirm("Supprimer cette tâche ?")) return;
-    try {
-      const docId = editingCard.documentId || editingCard.id;
-      await cardService.deleteCard(docId);
-      setEditingCard(null);
-      fetchAll();
-    } catch (err) { console.error(err); }
+  const onDeleteCard = () => {
+    setPromptConfig({
+      isOpen: true,
+      title: "Supprimer cette tâche ?",
+      defaultValue: "",
+      isConfirm: true,
+      onConfirm: async () => {
+        try {
+          const docId = editingCard.documentId || editingCard.id;
+          await cardService.deleteCard(docId);
+          setEditingCard(null);
+          fetchAll();
+        } catch (err) { console.error(err); }
+        closePrompt();
+      }
+    });
   };
 
   const handleDragStart = (event) => {
@@ -267,7 +329,7 @@ export default function Board() {
         fetchAll();
       }
     } catch (err) {
-      console.error("Erreur Drag & Drop :", err);
+      console.error(err);
       fetchAll();
     }
   };
@@ -336,6 +398,15 @@ export default function Board() {
             onClose={() => setEditingCard(null)}
             onUpdate={onUpdateCard}
             onDelete={onDeleteCard}
+        />
+
+        <CustomPrompt
+            isOpen={promptConfig.isOpen}
+            title={promptConfig.title}
+            defaultValue={promptConfig.defaultValue}
+            isConfirm={promptConfig.isConfirm}
+            onConfirm={promptConfig.onConfirm}
+            onCancel={closePrompt}
         />
       </div>
   );

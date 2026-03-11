@@ -28,5 +28,12 @@ export const boardService = {
     getBoardById: async (boardId) => {
         const res = await api.get(`/boards/${boardId}`);
         return res.data.data;
+    },
+
+    updateBoard: async (boardId, updateData) => {
+        const payload = {
+            data: updateData
+        };
+        return await api.put(`/boards/${boardId}`, payload);
     }
 };

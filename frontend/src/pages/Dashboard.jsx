@@ -5,12 +5,21 @@ import "./Dashboard.css";
 
 import Navbar from "../components/Navbar";
 import ProjectCard from "../components/ProjectCard";
+import CustomPrompt from "../components/CustomPrompt";
 
 export default function Dashboard() {
   const [boards, setBoards] = useState([]);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+
+  const [promptConfig, setPromptConfig] = useState({
+    isOpen: false,
+    title: "",
+    defaultValue: "",
+    isConfirm: false,
+    onConfirm: () => {}
+  });
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -29,35 +38,80 @@ export default function Dashboard() {
       const myBoards = await boardService.getUserBoards(userId);
       setBoards(myBoards);
     } catch (e) {
-      console.error("Erreur de récupération des projets:", e);
+      console.error(e);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleCreateBoard = async () => {
-    const title = window.prompt("Saisissez le nom du nouveau projet :");
-    if (!title) return;
-
-    try {
-      await boardService.createBoard(title, user.id);
-      loadBoards(user.id);
-    } catch (e) {
-      console.error("Erreur de création du projet:", e);
-      alert("Impossible de créer le projet. Vérifiez votre connexion.");
-    }
+  const closePrompt = () => {
+    setPromptConfig(prev => ({ ...prev, isOpen: false }));
   };
 
-  const handleDeleteBoard = async (project) => {
-    if (!window.confirm("Êtes-vous sûr de vouloir supprimer ce projet ? Toutes les données associées seront perdues.")) return;
+  const handleCreateBoard = () => {
+    setPromptConfig({
+      isOpen: true,
+      title: "Saisissez le nom du nouveau projet :",
+      defaultValue: "",
+      isConfirm: false,
+      onConfirm: async (title) => {
+        if (!title) {
+          closePrompt();
+          return;
+        }
+        try {
+          await boardService.createBoard(title, user.id);
+          loadBoards(user.id);
+        } catch (e) {
+          console.error(e);
+        }
+        closePrompt();
+      }
+    });
+  };
 
-    try {
-      const docId = project.documentId || project.id;
-      await boardService.deleteBoard(docId);
-      loadBoards(user.id);
-    } catch (e) {
-      console.error("Erreur de suppression du projet:", e);
-    }
+  const handleEditBoard = (project) => {
+    const currentTitle = project.title || project.attributes?.title;
+
+    setPromptConfig({
+      isOpen: true,
+      title: "Saisissez le nouveau nom du projet :",
+      defaultValue: currentTitle,
+      isConfirm: false,
+      onConfirm: async (newTitle) => {
+        if (!newTitle || newTitle === currentTitle) {
+          closePrompt();
+          return;
+        }
+        try {
+          const docId = project.documentId || project.id;
+          await boardService.updateBoard(docId, { title: newTitle });
+          loadBoards(user.id);
+        } catch (e) {
+          console.error(e);
+        }
+        closePrompt();
+      }
+    });
+  };
+
+  const handleDeleteBoard = (project) => {
+    setPromptConfig({
+      isOpen: true,
+      title: "Êtes-vous sûr de vouloir supprimer ce projet ? Toutes les données associées seront perdues.",
+      defaultValue: "",
+      isConfirm: true,
+      onConfirm: async () => {
+        try {
+          const docId = project.documentId || project.id;
+          await boardService.deleteBoard(docId);
+          loadBoards(user.id);
+        } catch (e) {
+          console.error(e);
+        }
+        closePrompt();
+      }
+    });
   };
 
   const handleLogout = () => {
@@ -87,11 +141,21 @@ export default function Dashboard() {
                         project={b}
                         onClick={() => navigate(`/board/${b.documentId || b.id}`)}
                         onDelete={handleDeleteBoard}
+                        onEdit={handleEditBoard}
                     />
                 ))
             )}
           </div>
         </div>
+
+        <CustomPrompt
+            isOpen={promptConfig.isOpen}
+            title={promptConfig.title}
+            defaultValue={promptConfig.defaultValue}
+            isConfirm={promptConfig.isConfirm}
+            onConfirm={promptConfig.onConfirm}
+            onCancel={closePrompt}
+        />
       </div>
   );
 }
