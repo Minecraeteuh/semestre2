@@ -16,12 +16,12 @@ import { SortableContext, horizontalListSortingStrategy, arrayMove } from "@dnd-
 import BoardList from "../components/BoardList";
 import TaskModal from "../components/TaskModal";
 import CustomPrompt from "../components/CustomPrompt";
+import Navbar from "../components/Navbar";
 
 const dropAnimationConfig = {
   duration: 250,
   easing: 'cubic-bezier(0.18, 0.67, 0.6, 1.22)',
-  sideEffects: defaultDropAnimationSideEffects({ styles: { active: { opacity: "0.2" } } }),
-};
+  sideEffects: defaultDropAnimationSideEffects({ styles: { active: { opacity: "0.2" } } }), };
 
 export default function Board() {
   const { id: boardId } = useParams();
@@ -33,23 +33,28 @@ export default function Board() {
   const [isUpdating, setIsUpdating] = useState(false);
   const [activeColumn, setActiveColumn] = useState(null);
   const [activeCard, setActiveCard] = useState(null);
+  const [user, setUser] = useState(null);
 
   const [promptConfig, setPromptConfig] = useState({
     isOpen: false,
     title: "",
     defaultValue: "",
     isConfirm: false,
-    onConfirm: () => {}
-  });
+    onConfirm: () => {} });
 
   const sensors = useSensors(
       useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
-      useSensor(KeyboardSensor)
-  );
+      useSensor(KeyboardSensor));
 
   useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    } else {
+      navigate("/", { replace: true });}
+
     if (boardId) fetchAll();
-  }, [boardId]);
+  }, [boardId, navigate]);
 
   const fetchAll = async () => {
     try {
@@ -57,12 +62,14 @@ export default function Board() {
       setBoard(b);
       const l = await listService.getListsByBoard(boardId);
       setLists(l);
-    } catch (e) { console.error(e); }
-  };
+    } catch (e) { console.error(e); }};
 
   const closePrompt = () => {
-    setPromptConfig(prev => ({ ...prev, isOpen: false }));
-  };
+    setPromptConfig(prev => ({ ...prev, isOpen: false }));};
+
+  const handleLogout = () => {
+    localStorage.clear();
+    navigate("/", { replace: true });};
 
   const onDeleteList = (listId) => {
     setPromptConfig({
@@ -116,8 +123,7 @@ export default function Board() {
       description: formData.get("description") || "",
       label: formData.get("label") || "#cccccc",
       duedate: rawDate ? `${rawDate}T12:00:00.000Z` : null,
-      order: parseInt(formData.get("order"), 10) || 1
-    };
+      order: parseInt(formData.get("order"), 10) || 1};
 
     try {
       const docId = editingCard.documentId || editingCard.id;
@@ -137,8 +143,7 @@ export default function Board() {
       onConfirm: async (name) => {
         if (!name) {
           closePrompt();
-          return;
-        }
+          return;}
         const newOrder = lists.length > 0 ? Math.max(...lists.map(l => l.attributes?.order ?? l.order ?? 0)) + 1 : 1;
         try {
           await listService.createList(name, board.id, newOrder);
@@ -158,8 +163,7 @@ export default function Board() {
       onConfirm: async (title) => {
         if (!title) {
           closePrompt();
-          return;
-        }
+          return;}
         const targetList = lists.find(l => String(l.documentId || l.id) === String(listId));
         const cards = targetList?.cards || targetList?.attributes?.cards?.data || [];
         const newOrder = cards.length > 0 ? Math.max(...cards.map(c => c.attributes?.order ?? c.order ?? 0)) + 1 : 1;
@@ -185,8 +189,7 @@ export default function Board() {
           setEditingCard(null);
           fetchAll();
         } catch (err) { console.error(err); }
-        closePrompt();
-      }
+        closePrompt();}
     });
   };
 
@@ -201,16 +204,14 @@ export default function Board() {
       for (const list of lists) {
         const cards = list.cards || list.attributes?.cards?.data || [];
         foundCard = cards.find(c => String(c.documentId || c.id) === realId);
-        if (foundCard) break;
-      }
+        if (foundCard) break;}
       setActiveCard(foundCard);
     }
   };
 
   const handleDragCancel = () => {
     setActiveColumn(null);
-    setActiveCard(null);
-  };
+    setActiveCard(null);};
 
   const handleDragOver = (event) => {
     const { active, over } = event;
@@ -272,8 +273,7 @@ export default function Board() {
         let overColumnId = String(over.id);
         if (overColumnId.startsWith("card-")) {
           const targetList = lists.find(l => (l.cards || l.attributes?.cards?.data || []).some(card => `card-${card.documentId || card.id}` === overColumnId));
-          if (targetList) overColumnId = `col-${targetList.documentId || targetList.id}`;
-        }
+          if (targetList) overColumnId = `col-${targetList.documentId || targetList.id}`;}
         if (active.id === overColumnId) return;
 
         const sortedLists = [...lists].sort((a, b) => (a.attributes?.order ?? a.order ?? 0) - (b.attributes?.order ?? b.order ?? 0));
@@ -303,12 +303,10 @@ export default function Board() {
 
         let newIndex = oldIndex;
         if (overId.startsWith("card-")) {
-          newIndex = cards.findIndex(c => `card-${c.documentId || c.id}` === overId);
-        }
+          newIndex = cards.findIndex(c => `card-${c.documentId || c.id}` === overId);}
 
         if (oldIndex !== newIndex && newIndex !== -1) {
-          cards = arrayMove(cards, oldIndex, newIndex);
-        }
+          cards = arrayMove(cards, oldIndex, newIndex);}
 
         cards.forEach((c, i) => { if (c.attributes) c.attributes.order = i + 1; else c.order = i + 1; });
 
@@ -316,22 +314,17 @@ export default function Board() {
           const newLists = prev.map(l => ({...l}));
           const idx = newLists.findIndex(l => l.id === targetList.id);
           if (newLists[idx].attributes) newLists[idx].attributes.cards.data = cards; else newLists[idx].cards = cards;
-          return newLists;
-        });
-
+          return newLists;});
         const targetListDocId = String(targetList.documentId || targetList.id);
-
         const promises = cards.map((card, index) => {
-          return cardService.updateCard(card.documentId || card.id, { order: index + 1, list: targetListDocId });
-        });
+          return cardService.updateCard(card.documentId || card.id, { order: index + 1, list: targetListDocId });});
 
         await Promise.all(promises);
         fetchAll();
       }
     } catch (err) {
       console.error(err);
-      fetchAll();
-    }
+      fetchAll();}
   };
 
   if (!board) return <div className="board-loader">Chargement du tableau...</div>;
@@ -339,11 +332,12 @@ export default function Board() {
   const sortedLists = [...lists].sort((a, b) => {
     const orderA = a.attributes?.order ?? a.order ?? 0;
     const orderB = b.attributes?.order ?? b.order ?? 0;
-    return orderA - orderB;
-  });
+    return orderA - orderB;});
 
   return (
       <div className="board-page">
+        <Navbar user={user} onLogout={handleLogout} />
+
         <header className="board-nav">
           <div className="board-nav-left">
             <button onClick={() => navigate("/dashboard")} className="board-back-btn">Retour</button>
@@ -357,8 +351,7 @@ export default function Board() {
             onDragStart={handleDragStart}
             onDragOver={handleDragOver}
             onDragEnd={handleDragEnd}
-            onDragCancel={handleDragCancel}
-        >
+            onDragCancel={handleDragCancel}>
           <main className="board-container">
             <SortableContext items={sortedLists.map(l => `col-${l.documentId || l.id}`)} strategy={horizontalListSortingStrategy}>
               {sortedLists.map((list) => (
@@ -368,8 +361,7 @@ export default function Board() {
                       onAddCard={onAddCard}
                       onEditCard={setEditingCard}
                       onDeleteList={onDeleteList}
-                      onRenameList={onRenameList}
-                  />
+                      onRenameList={onRenameList}/>
               ))}
             </SortableContext>
             <button onClick={onAddList} className="board-new-column">+ Nouvelle liste</button>
@@ -382,13 +374,11 @@ export default function Board() {
                     <span style={{ color: "#7f8c8d", fontSize: "16px", marginRight: "8px", fontWeight: "bold" }}>::</span>
                     {activeColumn.name || activeColumn.attributes?.name}
                   </div>
-                </div>
-            )}
+                </div>)}
             {activeCard && (
                 <div className="board-card" style={{ opacity: 0.95, borderLeft: "5px solid gray", boxShadow: "0px 8px 16px rgba(0,0,0,0.15)", cursor: "grabbing" }}>
                   <div className="board-card-title">{activeCard.title || activeCard.attributes?.title}</div>
-                </div>
-            )}
+                </div>)}
           </DragOverlay>
         </DndContext>
 
@@ -397,8 +387,7 @@ export default function Board() {
             isUpdating={isUpdating}
             onClose={() => setEditingCard(null)}
             onUpdate={onUpdateCard}
-            onDelete={onDeleteCard}
-        />
+            onDelete={onDeleteCard}/>
 
         <CustomPrompt
             isOpen={promptConfig.isOpen}
@@ -406,8 +395,7 @@ export default function Board() {
             defaultValue={promptConfig.defaultValue}
             isConfirm={promptConfig.isConfirm}
             onConfirm={promptConfig.onConfirm}
-            onCancel={closePrompt}
-        />
+            onCancel={closePrompt}/>
       </div>
   );
 }

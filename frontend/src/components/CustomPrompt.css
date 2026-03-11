@@ -1,3 +1,8 @@
+: root {
+    --blanc: #fff;
+
+}
+
 .custom-modal-overlay {
     position: fixed;
     top: 0;
@@ -13,13 +18,13 @@
 }
 
 .custom-modal-content {
-    background-color: #050505;
+    background-color: black;
     border: 1px solid #222;
     border-radius: 10px;
     padding: 24px;
     width: 400px;
     max-width: 90%;
-    color: #fff;
+    color: var(--blanc);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
 }
 
@@ -34,7 +39,7 @@
     padding: 12px;
     background: #111;
     border: 1px solid #333;
-    color: #fff;
+    color: var(--blanc);
     border-radius: 6px;
     font-family: inherit;
     font-size: 14px;
@@ -66,12 +71,12 @@
 }
 
 .custom-btn-cancel:hover {
-    color: #fff;
+    color: var(--blanc);
 }
 
 .custom-btn-confirm {
-    background-color: #fff;
-    color: #000;
+    background-color: var(--blanc);
+    color: black;
     border: none;
     border-radius: 6px;
     padding: 8px 16px;
