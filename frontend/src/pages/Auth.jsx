@@ -54,7 +54,7 @@ export default function Auth() {
       <div className="auth-page">
         <div className="auth-container">
           <h1 className="auth-logo">SupTaskFlow</h1>
-          <p className="auth-status">&gt;Veuillez vous connecter</p>
+          <p className="auth-status">Veuillez vous connecter</p>
           <form onSubmit={handleSubmit} className="auth-form">
             {error && <div className="auth-error-badge">Erreur : {error}</div>}
             {!isLogin && (
@@ -75,12 +75,12 @@ export default function Auth() {
                 required
             />
             <button type="submit" className="auth-btn" disabled={loading}>
-              {loading ? "Chargement... ": `[ ${isLogin ? "LOGIN" : "REGISTER"} ]`}
+              {loading ? "Chargement... ": ` ${isLogin ? "Connexion" : "Inscription"} `}
             </button>
           </form>
 
           <button onClick={() => setIsLogin(!isLogin)} className="auth-switch">
-            // {isLogin ? "Pas encore de compte ? Crééez-en un ici" : "Vous avez déjà un compte ? Connectez-vous ici"}
+            {isLogin ? "Pas encore de compte ? Crééez-en un ici" : "Vous avez déjà un compte ? Connectez-vous ici"}
           </button>
         </div>
       </div>

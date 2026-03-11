@@ -2,6 +2,8 @@
     padding: 40px;
     background-color: #000;
     min-height: 100vh;
+    width: 100%;
+    box-sizing: border-box;
     color: #fff;
     font-family: "Inter", system-ui, -apple-system, sans-serif;
 }
@@ -17,6 +19,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    width: 100%;
     margin-bottom: 60px;
     border-bottom: 1px solid #222;
     padding-bottom: 20px;
@@ -59,7 +62,7 @@
 }
 
 .dash-content {
-    max-width: 1000px;
+    width: 100%;
     margin: 0 auto;
 }
 
