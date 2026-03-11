@@ -1,3 +1,5 @@
+import editIcon from '../assets/edit-icon.svg';
+
 export default function ProjectCard({ project, onClick, onDelete }) {
     const title = project.title || project.attributes?.title;
 
