@@ -1,3 +1,8 @@
+: root {
+  --blanc: #fff;
+  --noir: #000;
+  --grisjoli: #888;
+}
 * {
   box-sizing: border-box;
   margin: 0;

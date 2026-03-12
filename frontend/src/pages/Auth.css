@@ -1,11 +1,16 @@
+: root {
+    --blanc: #fff;
+    --noir: #000;
+    --grisjoli: #888;
+}
 .auth-page {
     height: 100vh;
     width: 100vw;
-    background-color: #000;
+    background-color: var(--noir);
     display: flex;
     justify-content: center;
     align-items: center;
-    color: #fff;
+    color: var(--blanc);
     font-family: "Inter", system-ui, -apple-system, sans-serif;
 }
 
@@ -13,7 +18,7 @@
     width: 100%;
     max-width: 400px;
     padding: 40px;
-    background-color: #050505;
+    background-color: var(--noir);
     border: 1px solid #222;
     border-radius: 12px;
 }
@@ -40,11 +45,11 @@
 }
 
 .auth-input {
-    background-color: #000;
+    background-color: var(--noir);
     border: 1px solid #222;
     border-radius: 6px;
     padding: 10px 12px;
-    color: #fff;
+    color: var(--blanc);
     font-size: 14px;
     transition: border-color 0.2s;
     outline: none;
@@ -55,8 +60,8 @@
 }
 
 .auth-btn {
-    background-color: #fff;
-    color: #000;
+    background-color: var(--blanc);
+    color: var(--noir);
     border: none;
     border-radius: 6px;
     padding: 10px;
@@ -89,7 +94,7 @@
 .auth-switch {
     background: none;
     border: none;
-    color: #666;
+    color: var(--grisjoli);
     font-size: 13px;
     margin-top: 24px;
     cursor: pointer;
@@ -98,5 +103,5 @@
 }
 
 .auth-switch:hover {
-    color: #fff;
+    color: var(--blanc);
 }

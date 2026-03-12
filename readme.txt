@@ -1,68 +1,41 @@
-    SupTaskFlow - Gestionnaire de Projets Kanban
+SupTaskFlow - Gestionnaire de Projets Kanban
 
-Application de gestion de tâches, développée avec React pour le frontend et Strapi pour le backend.
+Procédure d'Installation
 
-    1. Modélisation des Données (Schéma)
-L'architecture de la base de données suit une imbrication logique :
-- User : Propriétaire des tableaux.
-- Board : Contient plusieurs Listes.
-- List : Appartient à un Board et contient plusieurs Cartes.
-- Card : L'unité de tâche (Titre, Description, Deadline, Order, Label).
+Backend (Strapi)
 
-    2. Procédure d'installation
+Aller dans le dossier /backend
 
-    Backend (Strapi)
-1. Aller dans le dossier `/backend`.
-2. Installer les dépendances : `npm install`.
-3. Lancer le serveur : `npm run develop`.
-4. Important : Restaurer les données ou configurer les permissions `find`, `create`, `update` et `delete` pour le rôle `Authenticated` sur toutes les collections.
+Installer les dépendances : npm install
 
-### Frontend (React)
-1. Aller dans le dossier `/frontend`.
-2. Installer les dépendances : `npm install`.
-3. Configurer le fichier `.env` avec `VITE_API_URL=http://localhost:1337/api`.
-4. Lancer l'application : `npm run dev`.
+Lancer le serveur : npm run develop
 
-## 3. Choix Techniques
-- **Drag & Drop Natif (HTML5)** : Choisi pour sa légèreté et sa fluidité sans dépendances lourdes.
-- **Strapi 5** : Utilisation du système de `documentId` pour une gestion robuste des mises à jour API.
-- **CSS-in-JS** : Pour un design "Brutaliste/Cyberpunk" cohérent et une maintenance facilitée.
+Important : Restaurer les données ou configurer les permissions find, create, update et delete pour le rôle Authenticated sur toutes les collections.
 
-## 4. Guide Utilisateur
-- **Création** : Utilisez le bouton `[+] NEW_PROJECT` sur le dashboard.
-- **Organisation** : Créez des colonnes, puis des cartes.
-- **Interaction** : Glissez-déposez les cartes entre les colonnes pour changer leur état.
-- **Édition** : Cliquez sur une carte pour ouvrir le terminal d'édition (Description, Date, Label).
-Application de gestion de tâches type Trello, développée avec **React** (Vite) pour le frontend et **Strapi 5** pour le backend.
+Frontend (React)
 
-## 1. Modélisation des Données (Schéma)
-L'architecture de la base de données suit une imbrication logique :
-- **User** : Propriétaire des tableaux.
-- **Board** : Contient plusieurs Listes.
-- **List** : Appartient à un Board et contient plusieurs Cartes.
-- **Card** : L'unité de tâche (Titre, Description, Deadline, Order, Label).
+Aller dans le dossier /frontend
 
-## 2. Procédure d'Installation
+Installer les dépendances : npm install
 
-### Backend (Strapi)
-1. Aller dans le dossier `/backend`.
-2. Installer les dépendances : `npm install`.
-3. Lancer le serveur : `npm run develop`.
-4. **Important** : Restaurer les données ou configurer les permissions `find`, `create`, `update` et `delete` pour le rôle `Authenticated` sur toutes les collections.
+Configurer le fichier .env avec VITE_API_URL=http://localhost:1337/api
 
-### Frontend (React)
-1. Aller dans le dossier `/frontend`.
-2. Installer les dépendances : `npm install`.
-3. Configurer le fichier `.env` avec `VITE_API_URL=http://localhost:1337/api`.
-4. Lancer l'application : `npm run dev`.
+Lancer l'application : npm run dev
 
-## 3. Choix Techniques
-- **Drag & Drop Natif (HTML5)** : Choisi pour sa légèreté et sa fluidité sans dépendances lourdes.
-- **Strapi 5** : Utilisation du système de `documentId` pour une gestion robuste des mises à jour API.
-- **CSS-in-JS** : Pour un design "Brutaliste/Cyberpunk" cohérent et une maintenance facilitée.
+Choix Techniques
 
-## 4. Guide Utilisateur
-- **Création** : Utilisez le bouton `[+] NEW_PROJECT` sur le dashboard.
-- **Organisation** : Créez des colonnes, puis des cartes.
-- **Interaction** : Glissez-déposez les cartes entre les colonnes pour changer leur état.
-- **Édition** : Cliquez sur une carte pour ouvrir le terminal d'édition (Description, Date, Label).
+Bibliothèque dnd-kit : Remplacement du Drag & Drop HTML5 natif par dnd-kit, comme explicitement recommandé dans les consignes. Cela garantit une meilleure robustesse, une compatibilité accrue et une fluidité optimale sans enfreindre la règle d'interdiction des librairies tout-en-un.
+
+Strapi 5 : Utilisation du système de documentId pour une gestion robuste des requêtes et mises à jour API.
+
+CSS Standard : Fichiers CSS classiques pour assurer une architecture visuelle cohérente et maintenable sans recourir à des bibliothèques UI externes.
+
+Guide Utilisateur
+
+Création : Utilisez le bouton + Nouveau projet sur le tableau de bord.
+
+Organisation : Créez des listes (colonnes), puis ajoutez des cartes à l'intérieur.
+
+Interaction : Glissez et déposez les cartes entre les colonnes ou réorganisez l'ordre des colonnes directement à la souris.
+
+Édition : Cliquez sur une carte pour ouvrir la fenêtre d'édition et modifier sa description, sa date d'échéance ou son étiquette couleur.

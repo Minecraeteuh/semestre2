@@ -1,338 +1,56 @@
-import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-
-import { boardService } from "../services/boardService";
-import { listService } from "../services/listService";
-import { cardService } from "../services/cardService";
-
+import { useParams } from "react-router-dom";
 import "./Board.css";
-
-import {
-  DndContext, closestCorners, KeyboardSensor, PointerSensor,
-  useSensor, useSensors, DragOverlay, defaultDropAnimationSideEffects
-} from "@dnd-kit/core";
-import { SortableContext, horizontalListSortingStrategy, arrayMove } from "@dnd-kit/sortable";
+import { DndContext, closestCorners, DragOverlay, defaultDropAnimationSideEffects } from "@dnd-kit/core";
+import { SortableContext, horizontalListSortingStrategy } from "@dnd-kit/sortable";
 
 import BoardList from "../components/BoardList";
 import TaskModal from "../components/TaskModal";
 import CustomPrompt from "../components/CustomPrompt";
 import Navbar from "../components/Navbar";
+import { useBoard } from "../hooks/useBoard";
 
 const dropAnimationConfig = {
   duration: 250,
   easing: 'cubic-bezier(0.18, 0.67, 0.6, 1.22)',
-  sideEffects: defaultDropAnimationSideEffects({ styles: { active: { opacity: "0.2" } } }), };
+  sideEffects: defaultDropAnimationSideEffects({ styles: { active: { opacity: "0.2" } } }),
+};
 
 export default function Board() {
   const { id: boardId } = useParams();
-  const navigate = useNavigate();
 
-  const [board, setBoard] = useState(null);
-  const [lists, setLists] = useState([]);
-  const [editingCard, setEditingCard] = useState(null);
-  const [isUpdating, setIsUpdating] = useState(false);
-  const [activeColumn, setActiveColumn] = useState(null);
-  const [activeCard, setActiveCard] = useState(null);
-  const [user, setUser] = useState(null);
-
-  const [promptConfig, setPromptConfig] = useState({
-    isOpen: false,
-    title: "",
-    defaultValue: "",
-    isConfirm: false,
-    onConfirm: () => {} });
-
-  const sensors = useSensors(
-      useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
-      useSensor(KeyboardSensor));
-
-  useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    } else {
-      navigate("/", { replace: true });}
-
-    if (boardId) fetchAll();
-  }, [boardId, navigate]);
-
-  const fetchAll = async () => {
-    try {
-      const b = await boardService.getBoardById(boardId);
-      setBoard(b);
-      const l = await listService.getListsByBoard(boardId);
-      setLists(l);
-    } catch (e) { console.error(e); }};
-
-  const closePrompt = () => {
-    setPromptConfig(prev => ({ ...prev, isOpen: false }));};
-
-  const handleLogout = () => {
-    localStorage.clear();
-    navigate("/", { replace: true });};
-
-  const onDeleteList = (listId) => {
-    setPromptConfig({
-      isOpen: true,
-      title: "Voulez-vous vraiment supprimer cette colonne ET toutes les tâches à l'intérieur ?",
-      defaultValue: "",
-      isConfirm: true,
-      onConfirm: async () => {
-        try {
-          const listToDelete = lists.find(l => String(l.documentId || l.id) === String(listId));
-          const cards = listToDelete?.cards || listToDelete?.attributes?.cards?.data || [];
-
-          await Promise.all(cards.map(c => cardService.deleteCard(c.documentId || c.id)));
-          await listService.deleteList(listId);
-
-          fetchAll();
-        } catch (err) { console.error(err); }
-        closePrompt();
-      }
-    });
-  };
-
-  const onRenameList = (listId, currentName) => {
-    setPromptConfig({
-      isOpen: true,
-      title: "Nouveau nom de la colonne :",
-      defaultValue: currentName,
-      isConfirm: false,
-      onConfirm: async (newName) => {
-        if (!newName || newName === currentName) {
-          closePrompt();
-          return;
-        }
-        try {
-          await listService.updateList(listId, { name: newName });
-          fetchAll();
-        } catch (err) { console.error(err); }
-        closePrompt();
-      }
-    });
-  };
-
-  const onUpdateCard = async (e) => {
-    e.preventDefault();
-    setIsUpdating(true);
-    const formData = new FormData(e.target);
-    const rawDate = formData.get("duedate");
-
-    const data = {
-      title: formData.get("title"),
-      description: formData.get("description") || "",
-      label: formData.get("label") || "#cccccc",
-      duedate: rawDate ? `${rawDate}T12:00:00.000Z` : null,
-      order: parseInt(formData.get("order"), 10) || 1};
-
-    try {
-      const docId = editingCard.documentId || editingCard.id;
-      await cardService.updateCard(docId, data);
-      setEditingCard(null);
-      fetchAll();
-    } catch (err) { console.error(err); }
-    finally { setIsUpdating(false); }
-  };
-
-  const onAddList = () => {
-    setPromptConfig({
-      isOpen: true,
-      title: "Saisissez le nom de la nouvelle liste :",
-      defaultValue: "",
-      isConfirm: false,
-      onConfirm: async (name) => {
-        if (!name) {
-          closePrompt();
-          return;}
-        const newOrder = lists.length > 0 ? Math.max(...lists.map(l => l.attributes?.order ?? l.order ?? 0)) + 1 : 1;
-        try {
-          await listService.createList(name, board.id, newOrder);
-          fetchAll();
-        } catch (err) { console.error(err); }
-        closePrompt();
-      }
-    });
-  };
-
-  const onAddCard = (listId) => {
-    setPromptConfig({
-      isOpen: true,
-      title: "Saisissez le titre de la nouvelle tâche :",
-      defaultValue: "",
-      isConfirm: false,
-      onConfirm: async (title) => {
-        if (!title) {
-          closePrompt();
-          return;}
-        const targetList = lists.find(l => String(l.documentId || l.id) === String(listId));
-        const cards = targetList?.cards || targetList?.attributes?.cards?.data || [];
-        const newOrder = cards.length > 0 ? Math.max(...cards.map(c => c.attributes?.order ?? c.order ?? 0)) + 1 : 1;
-        try {
-          await cardService.createCard(title, listId, newOrder);
-          fetchAll();
-        } catch (err) { console.error(err); }
-        closePrompt();
-      }
-    });
-  };
-
-  const onDeleteCard = () => {
-    setPromptConfig({
-      isOpen: true,
-      title: "Supprimer cette tâche ?",
-      defaultValue: "",
-      isConfirm: true,
-      onConfirm: async () => {
-        try {
-          const docId = editingCard.documentId || editingCard.id;
-          await cardService.deleteCard(docId);
-          setEditingCard(null);
-          fetchAll();
-        } catch (err) { console.error(err); }
-        closePrompt();}
-    });
-  };
-
-  const handleDragStart = (event) => {
-    const { active } = event;
-    const id = String(active.id);
-    if (id.startsWith("col-")) {
-      setActiveColumn(lists.find(l => String(l.documentId || l.id) === id.replace("col-", "")));
-    } else if (id.startsWith("card-")) {
-      const realId = id.replace("card-", "");
-      let foundCard = null;
-      for (const list of lists) {
-        const cards = list.cards || list.attributes?.cards?.data || [];
-        foundCard = cards.find(c => String(c.documentId || c.id) === realId);
-        if (foundCard) break;}
-      setActiveCard(foundCard);
-    }
-  };
-
-  const handleDragCancel = () => {
-    setActiveColumn(null);
-    setActiveCard(null);};
-
-  const handleDragOver = (event) => {
-    const { active, over } = event;
-    if (!over) return;
-
-    const activeId = String(active.id);
-    const overId = String(over.id);
-    if (activeId === overId) return;
-
-    if (activeId.startsWith("card-")) {
-      setLists((prev) => {
-        const newLists = prev.map(l => ({ ...l }));
-
-        const sourceIdx = newLists.findIndex(l => (l.cards || l.attributes?.cards?.data || []).some(c => `card-${c.documentId || c.id}` === activeId));
-        let targetIdx = -1;
-
-        if (overId.startsWith("col-")) targetIdx = newLists.findIndex(l => `col-${l.documentId || l.id}` === overId);
-        else if (overId.startsWith("card-")) targetIdx = newLists.findIndex(l => (l.cards || l.attributes?.cards?.data || []).some(c => `card-${c.documentId || c.id}` === overId));
-
-        if (sourceIdx === -1 || targetIdx === -1) return prev;
-        if (sourceIdx === targetIdx) return prev;
-
-        const sCards = [...(newLists[sourceIdx].cards || newLists[sourceIdx].attributes?.cards?.data || [])].sort((a,b) => (a.attributes?.order??a.order??0) - (b.attributes?.order??b.order??0));
-        const tCards = [...(newLists[targetIdx].cards || newLists[targetIdx].attributes?.cards?.data || [])].sort((a,b) => (a.attributes?.order??a.order??0) - (b.attributes?.order??b.order??0));
-
-        const activeCardIdx = sCards.findIndex(c => `card-${c.documentId || c.id}` === activeId);
-        if (activeCardIdx === -1) return prev;
-
-        const [draggedCard] = sCards.splice(activeCardIdx, 1);
-
-        let dropIndex = tCards.length;
-        if (overId.startsWith("card-")) {
-          const overCardIdx = tCards.findIndex(c => `card-${c.documentId || c.id}` === overId);
-          if (overCardIdx !== -1) dropIndex = overCardIdx;
-        }
-
-        tCards.splice(dropIndex, 0, draggedCard);
-
-        sCards.forEach((c, i) => { if (c.attributes) c.attributes.order = i + 1; else c.order = i + 1; });
-        tCards.forEach((c, i) => { if (c.attributes) c.attributes.order = i + 1; else c.order = i + 1; });
-
-        if (newLists[sourceIdx].attributes) newLists[sourceIdx].attributes.cards.data = sCards; else newLists[sourceIdx].cards = sCards;
-        if (newLists[targetIdx].attributes) newLists[targetIdx].attributes.cards.data = tCards; else newLists[targetIdx].cards = tCards;
-
-        return newLists;
-      });
-    }
-  };
-
-  const handleDragEnd = async (event) => {
-    setActiveColumn(null);
-    setActiveCard(null);
-
-    const { active, over } = event;
-    if (!over) return;
-
-    try {
-      if (String(active.id).startsWith("col-")) {
-        let overColumnId = String(over.id);
-        if (overColumnId.startsWith("card-")) {
-          const targetList = lists.find(l => (l.cards || l.attributes?.cards?.data || []).some(card => `card-${card.documentId || card.id}` === overColumnId));
-          if (targetList) overColumnId = `col-${targetList.documentId || targetList.id}`;}
-        if (active.id === overColumnId) return;
-
-        const sortedLists = [...lists].sort((a, b) => (a.attributes?.order ?? a.order ?? 0) - (b.attributes?.order ?? b.order ?? 0));
-        const oldIndex = sortedLists.findIndex(l => `col-${l.documentId || l.id}` === active.id);
-        const newIndex = sortedLists.findIndex(l => `col-${l.documentId || l.id}` === overColumnId);
-
-        if (oldIndex !== -1 && newIndex !== -1) {
-          const newLists = arrayMove(sortedLists, oldIndex, newIndex);
-          newLists.forEach((l, i) => { if (l.attributes) l.attributes.order = i + 1; else l.order = i + 1; });
-          setLists(newLists);
-
-          await Promise.all(newLists.map((l, index) => listService.updateList(l.documentId || l.id, { order: index + 1 })));
-          fetchAll();
-        }
-        return;
-      }
-
-      if (String(active.id).startsWith("card-")) {
-        const activeId = String(active.id);
-        const overId = String(over.id);
-
-        let targetList = lists.find(l => (l.cards || l.attributes?.cards?.data || []).some(c => `card-${c.documentId || c.id}` === activeId));
-        if (!targetList) return;
-
-        let cards = [...(targetList.cards || targetList.attributes?.cards?.data || [])].sort((a,b) => (a.attributes?.order??a.order??0) - (b.attributes?.order??b.order??0));
-        const oldIndex = cards.findIndex(c => `card-${c.documentId || c.id}` === activeId);
-
-        let newIndex = oldIndex;
-        if (overId.startsWith("card-")) {
-          newIndex = cards.findIndex(c => `card-${c.documentId || c.id}` === overId);}
-
-        if (oldIndex !== newIndex && newIndex !== -1) {
-          cards = arrayMove(cards, oldIndex, newIndex);}
-
-        cards.forEach((c, i) => { if (c.attributes) c.attributes.order = i + 1; else c.order = i + 1; });
-
-        setLists(prev => {
-          const newLists = prev.map(l => ({...l}));
-          const idx = newLists.findIndex(l => l.id === targetList.id);
-          if (newLists[idx].attributes) newLists[idx].attributes.cards.data = cards; else newLists[idx].cards = cards;
-          return newLists;});
-        const targetListDocId = String(targetList.documentId || targetList.id);
-        const promises = cards.map((card, index) => {
-          return cardService.updateCard(card.documentId || card.id, { order: index + 1, list: targetListDocId });});
-
-        await Promise.all(promises);
-        fetchAll();
-      }
-    } catch (err) {
-      console.error(err);
-      fetchAll();}
-  };
+  const {
+    board,
+    lists,
+    editingCard,
+    setEditingCard,
+    isUpdating,
+    activeColumn,
+    activeCard,
+    user,
+    promptConfig,
+    closePrompt,
+    handleLogout,
+    onDeleteList,
+    onRenameList,
+    onUpdateCard,
+    onAddList,
+    onAddCard,
+    onDeleteCard,
+    handleDragStart,
+    handleDragCancel,
+    handleDragOver,
+    handleDragEnd,
+    sensors,
+    navigate
+  } = useBoard(boardId);
 
   if (!board) return <div className="board-loader">Chargement du tableau...</div>;
 
   const sortedLists = [...lists].sort((a, b) => {
     const orderA = a.attributes?.order ?? a.order ?? 0;
     const orderB = b.attributes?.order ?? b.order ?? 0;
-    return orderA - orderB;});
+    return orderA - orderB;
+  });
 
   return (
       <div className="board-page">
@@ -351,7 +69,8 @@ export default function Board() {
             onDragStart={handleDragStart}
             onDragOver={handleDragOver}
             onDragEnd={handleDragEnd}
-            onDragCancel={handleDragCancel}>
+            onDragCancel={handleDragCancel}
+        >
           <main className="board-container">
             <SortableContext items={sortedLists.map(l => `col-${l.documentId || l.id}`)} strategy={horizontalListSortingStrategy}>
               {sortedLists.map((list) => (
@@ -361,7 +80,8 @@ export default function Board() {
                       onAddCard={onAddCard}
                       onEditCard={setEditingCard}
                       onDeleteList={onDeleteList}
-                      onRenameList={onRenameList}/>
+                      onRenameList={onRenameList}
+                  />
               ))}
             </SortableContext>
             <button onClick={onAddList} className="board-new-column">+ Nouvelle liste</button>
@@ -374,11 +94,13 @@ export default function Board() {
                     <span style={{ color: "#7f8c8d", fontSize: "16px", marginRight: "8px", fontWeight: "bold" }}>::</span>
                     {activeColumn.name || activeColumn.attributes?.name}
                   </div>
-                </div>)}
+                </div>
+            )}
             {activeCard && (
                 <div className="board-card" style={{ opacity: 0.95, borderLeft: "5px solid gray", boxShadow: "0px 8px 16px rgba(0,0,0,0.15)", cursor: "grabbing" }}>
                   <div className="board-card-title">{activeCard.title || activeCard.attributes?.title}</div>
-                </div>)}
+                </div>
+            )}
           </DragOverlay>
         </DndContext>
 
@@ -387,7 +109,8 @@ export default function Board() {
             isUpdating={isUpdating}
             onClose={() => setEditingCard(null)}
             onUpdate={onUpdateCard}
-            onDelete={onDeleteCard}/>
+            onDelete={onDeleteCard}
+        />
 
         <CustomPrompt
             isOpen={promptConfig.isOpen}
@@ -395,7 +118,8 @@ export default function Board() {
             defaultValue={promptConfig.defaultValue}
             isConfirm={promptConfig.isConfirm}
             onConfirm={promptConfig.onConfirm}
-            onCancel={closePrompt}/>
+            onCancel={closePrompt}
+        />
       </div>
   );
 }

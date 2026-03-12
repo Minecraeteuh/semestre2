@@ -1,8 +1,8 @@
 : root {
     --blanc: #fff;
-
+    --noir: #000;
+    --grisjoli: #888;
 }
-
 .custom-modal-overlay {
     position: fixed;
     top: 0;
@@ -18,7 +18,7 @@
 }
 
 .custom-modal-content {
-    background-color: black;
+    background-color: var(--noir);
     border: 1px solid #222;
     border-radius: 10px;
     padding: 24px;
@@ -50,7 +50,7 @@
 
 .custom-modal-content input:focus {
     outline: none;
-    border-color: #666;
+    border-color: var(--grisjoli);
 }
 
 .custom-modal-actions {
@@ -62,7 +62,7 @@
 .custom-btn-cancel {
     background: transparent;
     border: none;
-    color: #888;
+    color: var(--grisjoli);
     cursor: pointer;
     font-size: 14px;
     font-weight: 500;
@@ -76,7 +76,7 @@
 
 .custom-btn-confirm {
     background-color: var(--blanc);
-    color: black;
+    color: var(--noir);
     border: none;
     border-radius: 6px;
     padding: 8px 16px;

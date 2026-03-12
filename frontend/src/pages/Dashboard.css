@@ -1,16 +1,22 @@
+: root {
+    --blanc: #fff;
+    --noir: #000;
+    --grisjoli: #888;
+}
+
 .dash-page {
     padding: 40px;
-    background-color: #000;
+    background-color: var(--noir);
     min-height: 100vh;
     width: 100%;
     box-sizing: border-box;
-    color: #fff;
+    color: var(--blanc);
     font-family: "Inter", system-ui, -apple-system, sans-serif;
 }
 
 .dash-loader {
     padding: 100px;
-    color: #888;
+    color: var(--grisjoli);
     text-align: center;
     font-size: 15px;
 }
@@ -28,7 +34,7 @@
 .dash-logo {
     font-size: 20px;
     font-weight: 700;
-    color: #fff;
+    color: var(--blanc);
     letter-spacing: -0.02em;
     margin: 0;
     justify-self: center;
@@ -42,7 +48,7 @@
 }
 
 .dash-username {
-    color: #888;
+    color: var(--grisjoli);
     font-size: 14px;
     font-weight: 500;
 }
@@ -76,7 +82,7 @@
 }
 
 .dash-subtitle {
-    color: #eee;
+    color: var(--blanc);
     font-size: 24px;
     font-weight: 600;
     margin: 0;
@@ -84,8 +90,8 @@
 }
 
 .dash-create-btn {
-    background-color: #fff;
-    color: #000;
+    background-color: var(--blanc);
+    color: var(--noir);
     border: none;
     border-radius: 6px;
     padding: 10px 16px;
@@ -112,12 +118,12 @@
     border: 1px dashed #333;
     border-radius: 12px;
     background: rgba(255, 255, 255, 0.02);
-    color: #888;
+    color: var(--grisjoli);
     font-size: 14px;
 }
 
 .dash-card {
-    background-color: #050505;
+    background-color: var(--noir);
     border: 1px solid #222;
     border-radius: 10px;
     padding: 24px;
@@ -136,7 +142,7 @@
 }
 
 .dash-card-title {
-    color: #fff;
+    color: var(--blanc);
     margin: 0 0 16px 0;
     font-size: 16px;
     font-weight: 500;
@@ -174,7 +180,7 @@
 }
 
 .dash-card-title {
-    color: #fff;
+    color: var(--blanc);
     margin: 0;
     font-size: 16px;
     font-weight: 500;
