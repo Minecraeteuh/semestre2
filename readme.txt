@@ -18,7 +18,7 @@ Aller dans le dossier /frontend
 
 Installer les dépendances : npm install
 
-Configurer le fichier .env avec VITE_API_URL=http://localhost:1337/api
+Le .env est déjà présent. Pas besoin de le configurer.
 
 Lancer l'application : npm run dev
 
